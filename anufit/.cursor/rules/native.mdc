@@ -1,0 +1,20 @@
+---
+description: Android and iOS native platform guidelines
+globs: android/**,ios/**
+alwaysApply: false
+---
+
+# Native (Android / iOS)
+
+- Keep native changes minimal; prefer Flutter plugins (`permission_handler`, etc.).
+- Platform permissions must be declared in `AndroidManifest.xml` and `Info.plist`.
+- Do not commit secrets, keystores, or `local.properties` API keys.
+- Use flavors/schemes for dev, staging, and production env alignment.
+- Health sync and device APIs require explicit permission flows with user rationale.
+- After native dependency changes, run `flutter clean` and rebuild both platforms.
+
+| Concern | Android | iOS |
+|---------|---------|-----|
+| Permissions | `AndroidManifest.xml` | `Info.plist` |
+| Min SDK | `android/app/build.gradle.kts` | `ios/Podfile` |
+| App ID | `applicationId` | `PRODUCT_BUNDLE_IDENTIFIER` |

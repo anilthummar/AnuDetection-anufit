@@ -1,0 +1,23 @@
+---
+description: Testing standards for unit, widget, and integration tests
+globs: test/**
+alwaysApply: false
+---
+
+# Testing
+
+- Mirror `lib/` structure under `test/` (e.g. `test/features/dashboard/bloc/`).
+- **Unit test** blocs with `bloc_test`; mock use cases with `mocktail` or `mockito`.
+- **Widget test** pages with `pumpWidget` and mocked blocs via `BlocProvider.value`.
+- Name tests descriptively: `emits [Loading, Loaded] when LoadDashboard succeeds`.
+- Run full suite with `scripts/test.sh` or `flutter test`.
+- Aim for coverage on domain (use cases) and presentation (blocs); datasources optional.
+
+```dart
+blocTest<DashboardBloc, DashboardState>(
+  'emits [Loading, Loaded] when data loads',
+  build: () => DashboardBloc(getDashboardData: mockGetData),
+  act: (bloc) => bloc.add(const LoadDashboard()),
+  expect: () => [const DashboardLoading(), isA<DashboardLoaded>()],
+);
+```

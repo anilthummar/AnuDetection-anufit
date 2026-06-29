@@ -1,0 +1,28 @@
+---
+description: BLoC state management patterns
+globs: lib/**/bloc/**
+alwaysApply: false
+---
+
+# BLoC
+
+- Use `flutter_bloc`; one bloc per screen or cohesive flow.
+- States and events extend `Equatable` for value equality.
+- Name files: `<feature>_bloc.dart`, `<feature>_event.dart`, `<feature>_state.dart`.
+- Blocs call **use cases** only — never datasources or APIs directly.
+- Emit loading → success/error states; avoid redundant emissions.
+- Register blocs in feature `bindings/` via `get_it` / `injectable`.
+
+```dart
+// ✅ GOOD — bloc delegates to use case
+on<LoadDashboard>(_onLoadDashboard);
+
+Future<void> _onLoadDashboard(LoadDashboard event, Emitter emit) async {
+  emit(const DashboardLoading());
+  final result = await _getDashboardData(const NoParams());
+  result.fold(
+    (failure) => emit(DashboardError(failure.message)),
+    (data) => emit(DashboardLoaded(data)),
+  );
+}
+```

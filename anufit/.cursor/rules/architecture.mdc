@@ -1,0 +1,55 @@
+---
+description: Clean architecture and feature folder conventions
+globs: lib/**/*.dart
+alwaysApply: true
+---
+
+# Architecture
+
+## Folder structure
+
+```
+features/<name>/
+  data/        → datasources, models, repository impl
+  domain/      → entities, repository contracts, use cases
+  presentation/→ bloc, pages, widgets
+  bindings/    → DI registration for the feature
+```
+
+## Data flow — never bypass
+
+```
+UI → Bloc → UseCase → Repository → Datasource → Database → Native APIs
+```
+
+| Layer | May call | Must NOT call |
+|-------|----------|---------------|
+| UI | Bloc | UseCase, Repository, Datasource |
+| Bloc | UseCase | Repository, Datasource, DB |
+| UseCase | Repository | Datasource, DB, API |
+| RepositoryImpl | Datasource | UI, Bloc |
+| Datasource | Database / API / Platform | UI, Bloc, UseCase |
+
+## Dependency rule
+
+- `presentation` → `domain` only
+- `data` → `domain`
+- `domain` has **no** Flutter or data-layer imports
+
+## Use cases
+
+- One class per action; name as verb: `GetDashboardUseCase`.
+- Extend `UseCase<T, Params>` from `lib/core/usecase/`.
+
+## Repositories
+
+- Abstract contract in `domain/repository/`.
+- Implementation in `data/repository/`.
+
+## Feature workflow
+
+Follow `.cursor/rules/workflow.mdc` — implement in order:
+
+`Requirement → Architecture → Folder Structure → Entities → Database → Repository → UseCases → Bloc → UI → Testing`
+
+Do not skip steps or generate UI before lower layers exist.

@@ -1,0 +1,50 @@
+---
+description: UI, colors, typography, and responsive layout guidelines
+globs: lib/**/presentation/**,lib/**/widgets/**
+alwaysApply: false
+---
+
+# UI
+
+## Design-first
+
+Complete the Figma page (see `docs/design/figma/`) before implementing a screen.
+
+## Colors
+
+Use **only** tokens from `AppColors` and `context.semanticColors`.
+Never use `Colors.*`, hex literals, or `Color(0x...)` in widgets.
+
+```dart
+// ✅ GOOD
+color: AppColors.primary
+color: context.semanticColors.success
+
+// ❌ BAD
+color: Colors.blue
+color: Color(0xFF2563EB)
+```
+
+## Typography
+
+Use `Theme.of(context).textTheme` (Display, Headline, Title, Body, Label) or `AppTypography.caption`.
+Never hardcode `fontSize` or `fontWeight` in widgets.
+
+## Responsive
+
+Use `Breakpoints` and `context.responsive()` / `ResponsiveBuilder` / `ResponsiveContainer`.
+Never hardcode pixel widths (`width: 375`).
+
+```dart
+// ✅ GOOD
+padding: EdgeInsets.symmetric(horizontal: context.horizontalPadding)
+
+// ❌ BAD
+SizedBox(width: 360, child: ...)
+```
+
+## Structure
+
+- Pages in `presentation/pages/`; feature widgets in `presentation/widgets/`.
+- Keep widgets thin — business logic lives in Bloc.
+- Use `BlocBuilder` / `BlocListener`; no direct repository calls from UI.

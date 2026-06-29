@@ -1,0 +1,38 @@
+---
+description: Feature development sequence — follow in order for every feature
+alwaysApply: true
+---
+
+# Cursor Development Workflow
+
+For **every feature**, implement in this exact order. Do not skip ahead.
+
+```
+Requirement → Architecture → Folder Structure → Entities → Database
+    → Repository → UseCases → Bloc → UI → Testing
+```
+
+## Steps
+
+| # | Step | Output |
+|---|------|--------|
+| 1 | **Requirement** | Confirm scope from `docs/features/` or Figma (`docs/design/figma/`) |
+| 2 | **Architecture** | Layer diagram, data flow, naming per `docs/architecture/` |
+| 3 | **Folder Structure** | Scaffold `features/<name>/` (data, domain, presentation, bindings) |
+| 4 | **Entities** | Pure Dart entities in `domain/entities/` |
+| 5 | **Database** | Isar models in `data/models/`, datasource in `data/datasource/` |
+| 6 | **Repository** | Contract in `domain/repository/`, impl in `data/repository/` |
+| 7 | **UseCases** | One class per action in `domain/usecases/` |
+| 8 | **Bloc** | Event, state, bloc in `presentation/bloc/` |
+| 9 | **UI** | Page + widgets in `presentation/` — Figma must be **Ready** |
+| 10 | **Testing** | Unit tests (use cases, bloc), widget tests (pages) |
+
+## Rules
+
+- Complete each step before starting the next.
+- Never generate UI before Bloc and UseCases exist.
+- Never generate Bloc before Repository and UseCases exist.
+- Register DI in `bindings/` after Repository and Bloc are done.
+- Run `./scripts/analyze.sh` and `./scripts/test.sh` at the end.
+
+See `docs/architecture/development-workflow.md` for full checklists.

@@ -1,0 +1,22 @@
+---
+description: Isar database conventions
+globs: lib/**/database/**,lib/**/data/**
+alwaysApply: false
+---
+
+# Database (Isar)
+
+- Use **Isar** for local persistence; schemas live in `data/models/` or `core/database/`.
+- Annotate models with `@collection`; run `scripts/gen.sh` after schema changes.
+- Access Isar only from **datasources** in the data layer — never from UI or blocs.
+- Wrap DB errors in domain-friendly `Failure` types from `lib/core/errors/`.
+- Use migrations carefully; version collections when breaking schema changes occur.
+- Close / dispose Isar instances via DI lifecycle, not in widgets.
+
+```dart
+// ✅ GOOD — datasource owns Isar access
+class DashboardLocalDatasource {
+  final Isar _isar;
+  Future<List<DashboardModel>> getAll() => _isar.dashboardModels.where().findAll();
+}
+```

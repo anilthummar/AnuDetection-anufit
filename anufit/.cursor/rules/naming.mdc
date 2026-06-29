@@ -1,0 +1,22 @@
+---
+description: Predictable naming conventions for all features
+globs: lib/**
+alwaysApply: true
+---
+
+# Naming Conventions
+
+| Layer | Pattern | Example |
+|-------|---------|---------|
+| Page | `<Feature>Page` | `DashboardPage` |
+| Bloc | `<Feature>Bloc` | `DashboardBloc` |
+| Event | `<Feature>Event` | `DashboardEvent` |
+| State | `<Feature>State` | `DashboardState` |
+| Repository | `<Feature>Repository` | `DashboardRepository` |
+| Repository impl | `<Feature>RepositoryImpl` | `DashboardRepositoryImpl` |
+| Local datasource | `<Feature>LocalDatasource` | `DashboardLocalDatasource` |
+| Use case | `<Verb><Feature>UseCase` | `GetDashboardUseCase` |
+| Entity | `<Feature>Entity` | `DashboardEntity` |
+| Model | `<Feature>Model` | `DashboardModel` |
+
+Files use `snake_case`: `dashboard_page.dart`, `get_dashboard_use_case.dart`.
