@@ -11,6 +11,12 @@ class HealthPlatformDatasource {
 
   final Health _health;
 
+  static const _essentialReadTypes = [
+    HealthDataType.STEPS,
+    HealthDataType.DISTANCE_WALKING_RUNNING,
+    HealthDataType.ACTIVE_ENERGY_BURNED,
+  ];
+
   static const _readTypes = [
     HealthDataType.STEPS,
     HealthDataType.DISTANCE_WALKING_RUNNING,
@@ -59,18 +65,11 @@ class HealthPlatformDatasource {
 
   Future<HealthPermissionEntity> checkPermissions() async {
     await _health.configure();
-    final granted = await _health.hasPermissions(_readTypes) ?? false;
-    return HealthPermissionEntity(
-      steps: granted,
-      distance: granted,
-      calories: granted,
-      weight: granted,
-      height: granted,
-      authorized: granted,
-      status: granted ? HealthPermissionState.granted : HealthPermissionState.denied,
-    );
+    final granted = await _isAuthorized();
+    return _permissionEntity(granted);
   }
 
+  /// Opens the Health Connect / Apple Health permission UI.
   Future<HealthPermissionEntity> requestPermissions() async {
     await _health.configure();
     if (Platform.isAndroid) {
@@ -81,39 +80,76 @@ class HealthPlatformDatasource {
         } catch (_) {}
       }
     }
-    final permissions = _readTypes
-        .map((_) => HealthDataAccess.READ)
-        .toList();
-    final granted = await _health.requestAuthorization(_readTypes, permissions: permissions);
+
+    final readAccess = _readTypes.map((_) => HealthDataAccess.READ).toList();
+    await _health.requestAuthorization(_readTypes, permissions: readAccess);
+
+    var granted = await _isAuthorized();
     if (!granted && Platform.isAndroid) {
-      final writePermissions = _readTypes
+      final writeAccess = _readTypes
           .map(
             (type) => _writeTypes.contains(type)
                 ? HealthDataAccess.READ_WRITE
                 : HealthDataAccess.READ,
           )
           .toList();
-      final retry = await _health.requestAuthorization(_readTypes, permissions: writePermissions);
-      return HealthPermissionEntity(
-        steps: retry,
-        distance: retry,
-        calories: retry,
-        weight: retry,
-        height: retry,
-        authorized: retry,
-        status: retry ? HealthPermissionState.granted : HealthPermissionState.denied,
-      );
+      await _health.requestAuthorization(_readTypes, permissions: writeAccess);
+      granted = await _isAuthorized();
     }
-    return HealthPermissionEntity(
-      steps: granted,
-      distance: granted,
-      calories: granted,
-      weight: granted,
-      height: granted,
-      authorized: granted,
-      status: granted ? HealthPermissionState.granted : HealthPermissionState.denied,
-    );
+
+    return _permissionEntity(granted);
   }
+
+  Future<bool> _isAuthorized() async {
+    for (final type in _essentialReadTypes) {
+      if (await _hasAccess(type)) continue;
+      return await _canReadStepsProbe();
+    }
+
+    for (final type in _readTypes) {
+      if (!await _hasAccess(type)) {
+        return await _canReadStepsProbe();
+      }
+    }
+    return true;
+  }
+
+  Future<bool> _hasAccess(HealthDataType type) async {
+    final read = await _health.hasPermissions([type]);
+    if (read == true) return true;
+
+    final readWrite = await _health.hasPermissions(
+      [type],
+      permissions: [HealthDataAccess.READ_WRITE],
+    );
+    return readWrite == true;
+  }
+
+  /// Fallback when [hasPermissions] is stale after granting in Health Connect settings.
+  Future<bool> _canReadStepsProbe() async {
+    try {
+      final now = DateTime.now();
+      final start = DateTime(now.year, now.month, now.day);
+      await _health.getHealthDataFromTypes(
+        types: [HealthDataType.STEPS],
+        startTime: start,
+        endTime: now,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  HealthPermissionEntity _permissionEntity(bool granted) => HealthPermissionEntity(
+        steps: granted,
+        distance: granted,
+        calories: granted,
+        weight: granted,
+        height: granted,
+        authorized: granted,
+        status: granted ? HealthPermissionState.granted : HealthPermissionState.denied,
+      );
 
   Future<List<HealthDailyRecord>> readDailyRecords({
     required DateTime start,

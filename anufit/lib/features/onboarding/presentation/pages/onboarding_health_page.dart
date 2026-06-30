@@ -36,10 +36,7 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && mounted) {
-      final bloc = context.read<HealthConnectBloc>();
-      if (!bloc.state.connected) {
-        bloc.add(const HealthConnectGuidanceHandled());
-      }
+      context.read<HealthConnectBloc>().add(const HealthConnectResumeCheck());
     }
   }
 
@@ -69,22 +66,30 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
                   if (state.errorMessage != null) ...[
                     PermissionGuideCard(
                       message: state.errorMessage!,
-                      actionLabel: state.guidance == HealthConnectGuidance.grantActivityPermission
-                          ? 'Grant Activity Permission'
-                          : 'Open App Permissions',
+                      actionLabel: switch (state.guidance) {
+                        HealthConnectGuidance.grantActivityPermission =>
+                          'Grant Activity Permission',
+                        HealthConnectGuidance.openAppSettingsForActivity =>
+                          'Open App Permissions',
+                        HealthConnectGuidance.openHealthConnect =>
+                          'Grant Health Connect Access',
+                        null => 'Open Permissions',
+                      },
                       onAction: () {
-                        if (state.guidance == HealthConnectGuidance.grantActivityPermission) {
-                          context.push(AppRoutes.permissions).then((_) {
-                            if (context.mounted) {
-                              context
-                                  .read<HealthConnectBloc>()
-                                  .add(const HealthConnectGuidanceHandled());
-                            }
-                          });
-                        } else {
-                          context
-                              .read<HealthConnectBloc>()
-                              .add(const HealthConnectOpenSettingsRequested());
+                        final bloc = context.read<HealthConnectBloc>();
+                        switch (state.guidance) {
+                          case HealthConnectGuidance.grantActivityPermission:
+                            context.push(AppRoutes.permissions).then((_) {
+                              if (context.mounted) {
+                                bloc.add(const HealthConnectGuidanceHandled());
+                              }
+                            });
+                          case HealthConnectGuidance.openAppSettingsForActivity:
+                            bloc.add(const HealthConnectOpenSettingsRequested());
+                          case HealthConnectGuidance.openHealthConnect:
+                            bloc.add(const HealthConnectRequestHealthPermissions());
+                          case null:
+                            bloc.add(const HealthConnectRequested());
                         }
                       },
                     ),

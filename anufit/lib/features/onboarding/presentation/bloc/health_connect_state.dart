@@ -3,7 +3,7 @@ part of 'health_connect_bloc.dart';
 enum HealthConnectGuidance {
   grantActivityPermission,
   openAppSettingsForActivity,
-  openAppSettingsForHealth,
+  openHealthConnect,
 }
 
 class HealthConnectState extends Equatable {

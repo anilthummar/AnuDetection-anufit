@@ -19,6 +19,7 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
     this._connect,
     this._isAvailable,
     this._checkPermissions,
+    this._requestPermissions,
     this._permissions,
   ) : super(const HealthConnectState()) {
     on<HealthConnectRequested>(_onConnect);
@@ -26,6 +27,8 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
     on<HealthConnectLaterRequested>(_onConnectLater);
     on<HealthConnectGuidanceHandled>(_onGuidanceHandled);
     on<HealthConnectOpenSettingsRequested>(_onOpenSettings);
+    on<HealthConnectRequestHealthPermissions>(_onRequestHealthPermissions);
+    on<HealthConnectResumeCheck>(_onResumeCheck);
   }
 
   final GetAppSettingsUseCase _getSettings;
@@ -33,6 +36,7 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
   final ConnectHealthUseCase _connect;
   final IsHealthPlatformAvailableUseCase _isAvailable;
   final CheckHealthPermissionsUseCase _checkPermissions;
+  final RequestHealthPermissionsUseCase _requestPermissions;
   final PermissionService _permissions;
 
   Future<void> _onConnect(
@@ -82,8 +86,8 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
           isSaving: false,
           errorMessage: health.authorized
               ? 'Could not connect to Health. Try again or use Connect Later.'
-              : PermissionInstructions.healthWellnessDenied,
-          guidance: health.authorized ? null : HealthConnectGuidance.openAppSettingsForHealth,
+              : PermissionInstructions.healthConnectDenied,
+          guidance: health.authorized ? null : HealthConnectGuidance.openHealthConnect,
         ),
       );
     } catch (error) {
@@ -100,7 +104,7 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
   HealthConnectGuidance? _guidanceForError(Object error) {
     final message = error.toString().toLowerCase();
     if (message.contains('permission') || message.contains('denied')) {
-      return HealthConnectGuidance.openAppSettingsForHealth;
+      return HealthConnectGuidance.openHealthConnect;
     }
     return null;
   }
@@ -111,7 +115,7 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
       return 'Could not save health settings. Please try again.';
     }
     if (message.contains('Permission') || message.contains('denied')) {
-      return PermissionInstructions.healthWellnessDenied;
+      return PermissionInstructions.healthConnectDenied;
     }
     return 'Could not connect to Health. Please try again.';
   }
@@ -124,11 +128,59 @@ class HealthConnectBloc extends Bloc<HealthConnectEvent, HealthConnectState> {
     emit(state.copyWith(clearGuidance: true));
   }
 
+  Future<void> _onRequestHealthPermissions(
+    HealthConnectRequestHealthPermissions event,
+    Emitter<HealthConnectState> emit,
+  ) async {
+    emit(state.copyWith(isSaving: true, clearError: true, clearGuidance: true));
+    await _requestPermissions(const NoParams());
+    final health = await _checkPermissions(const NoParams());
+    if (health.authorized) {
+      final connected = await _connect(const NoParams());
+      if (connected) {
+        emit(state.copyWith(isSaving: false, connected: true));
+        return;
+      }
+    }
+    emit(
+      state.copyWith(
+        isSaving: false,
+        errorMessage: health.authorized
+            ? 'Could not connect to Health. Try again or use Connect Later.'
+            : PermissionInstructions.healthConnectDenied,
+        guidance: health.authorized ? null : HealthConnectGuidance.openHealthConnect,
+      ),
+    );
+  }
+
   void _onGuidanceHandled(
     HealthConnectGuidanceHandled event,
     Emitter<HealthConnectState> emit,
   ) {
-    emit(state.copyWith(clearGuidance: true));
+    emit(state.copyWith(clearGuidance: true, clearError: true));
+  }
+
+  Future<void> _onResumeCheck(
+    HealthConnectResumeCheck event,
+    Emitter<HealthConnectState> emit,
+  ) async {
+    if (state.connected) return;
+
+    final activity = await _permissions.checkPermission(
+      AppPermissionType.activityRecognition,
+    );
+    if (!activity.isGranted) return;
+
+    final health = await _checkPermissions(const NoParams());
+    if (!health.authorized) return;
+
+    emit(state.copyWith(isSaving: true, clearError: true, clearGuidance: true));
+    final connected = await _connect(const NoParams());
+    if (connected) {
+      emit(state.copyWith(isSaving: false, connected: true));
+    } else {
+      emit(state.copyWith(isSaving: false));
+    }
   }
 
   Future<void> _onSkip(HealthConnectSkipRequested event, Emitter<HealthConnectState> emit) async {

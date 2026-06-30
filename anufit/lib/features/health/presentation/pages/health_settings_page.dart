@@ -14,8 +14,32 @@ import 'package:anufit/features/health/presentation/widgets/sync_status_card.dar
 import 'package:anufit/shared/widgets/design_system.dart';
 import 'package:anufit/shared/widgets/permission_guide_card.dart';
 
-class HealthSettingsPage extends StatelessWidget {
+class HealthSettingsPage extends StatefulWidget {
   const HealthSettingsPage({super.key});
+
+  @override
+  State<HealthSettingsPage> createState() => _HealthSettingsPageState();
+}
+
+class _HealthSettingsPageState extends State<HealthSettingsPage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      context.read<HealthSettingsBloc>().add(const HealthSettingsResumeCheck());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +76,27 @@ class _Body extends StatelessWidget {
 
   final HealthSettingsLoaded state;
 
+  String _permissionActionLabel(HealthPermissionAction action) => switch (action) {
+        HealthPermissionAction.grantActivityPermission => 'Grant Activity Permission',
+        HealthPermissionAction.openAppSettings => 'Open App Permissions',
+        HealthPermissionAction.openHealthConnect => 'Grant Health Connect Access',
+      };
+
+  void _onPermissionAction(BuildContext context, HealthPermissionAction action) {
+    final bloc = context.read<HealthSettingsBloc>();
+    switch (action) {
+      case HealthPermissionAction.grantActivityPermission:
+        context.push(AppRoutes.permissions);
+      case HealthPermissionAction.openAppSettings:
+        bloc.add(const HealthSettingsOpenAppSettingsRequested());
+      case HealthPermissionAction.openHealthConnect:
+        bloc.add(const HealthSettingsRequestHealthConnectPermissions());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-  if (!state.platformAvailable) {
+    if (!state.platformAvailable) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(AppSpacing.lg),
@@ -85,18 +127,8 @@ class _Body extends StatelessWidget {
         if (state.message != null && state.permissionAction != null) ...[
           PermissionGuideCard(
             message: state.message!,
-            actionLabel: state.permissionAction == HealthPermissionAction.grantActivityPermission
-                ? 'Grant Activity Permission'
-                : 'Open App Permissions',
-            onAction: () {
-              if (state.permissionAction == HealthPermissionAction.grantActivityPermission) {
-                context.push(AppRoutes.permissions);
-              } else {
-                context
-                    .read<HealthSettingsBloc>()
-                    .add(const HealthSettingsOpenAppSettingsRequested());
-              }
-            },
+            actionLabel: _permissionActionLabel(state.permissionAction!),
+            onAction: () => _onPermissionAction(context, state.permissionAction!),
           ),
           const SizedBox(height: AppSpacing.lg),
         ],

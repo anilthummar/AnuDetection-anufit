@@ -29,3 +29,11 @@ final class HealthViewPermissionsRequested extends HealthSettingsEvent {
 final class HealthSettingsOpenAppSettingsRequested extends HealthSettingsEvent {
   const HealthSettingsOpenAppSettingsRequested();
 }
+
+final class HealthSettingsRequestHealthConnectPermissions extends HealthSettingsEvent {
+  const HealthSettingsRequestHealthConnectPermissions();
+}
+
+final class HealthSettingsResumeCheck extends HealthSettingsEvent {
+  const HealthSettingsResumeCheck();
+}

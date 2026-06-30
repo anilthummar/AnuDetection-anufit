@@ -19,6 +19,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     this._disconnect,
     this._sync,
     this._checkPermissions,
+    this._requestPermissions,
     this._isAvailable,
     this._refreshConnection,
     this._permissions,
@@ -29,6 +30,8 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     on<HealthSyncNowRequested>(_onSync);
     on<HealthViewPermissionsRequested>(_onViewPermissions);
     on<HealthSettingsOpenAppSettingsRequested>(_onOpenAppSettings);
+    on<HealthSettingsRequestHealthConnectPermissions>(_onRequestHealthConnect);
+    on<HealthSettingsResumeCheck>(_onResumeCheck);
   }
 
   final GetHealthSyncStatusUseCase _getStatus;
@@ -36,6 +39,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
   final DisconnectHealthUseCase _disconnect;
   final SyncHealthDataUseCase _sync;
   final CheckHealthPermissionsUseCase _checkPermissions;
+  final RequestHealthPermissionsUseCase _requestPermissions;
   final IsHealthPlatformAvailableUseCase _isAvailable;
   final RefreshHealthConnectionUseCase _refreshConnection;
   final PermissionService _permissions;
@@ -132,10 +136,8 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
         status: status,
         platformAvailable: true,
         isBusy: false,
-        message: connected
-            ? 'Health connected — pull steps from Health Connect'
-            : PermissionInstructions.healthWellnessDenied,
-        permissionAction: connected ? null : HealthPermissionAction.openAppSettings,
+        message: connected ? 'Health connected — pull steps from Health Connect' : PermissionInstructions.healthConnectDenied,
+        permissionAction: connected ? null : HealthPermissionAction.openHealthConnect,
       ));
     } catch (error) {
       emit(HealthSettingsError(error.toString()));
@@ -176,10 +178,65 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     Emitter<HealthSettingsState> emit,
   ) async {
     await _permissions.openSettings();
+  }
+
+  Future<void> _onRequestHealthConnect(
+    HealthSettingsRequestHealthConnectPermissions event,
+    Emitter<HealthSettingsState> emit,
+  ) async {
     final current = state;
     if (current is HealthSettingsLoaded) {
-      emit(current.copyWith(clearPermissionAction: true));
+      emit(current.copyWith(isBusy: true));
     }
+    await _requestPermissions(const NoParams());
+    await _refreshConnection(const NoParams());
+    final status = await _getStatus(const NoParams());
+    if (status.connected) {
+      emit(HealthSettingsLoaded(
+        status: status,
+        platformAvailable: true,
+        isBusy: false,
+        message: 'Health connected successfully',
+      ));
+      return;
+    }
+    emit(HealthSettingsLoaded(
+      status: status,
+      platformAvailable: true,
+      isBusy: false,
+      message: PermissionInstructions.healthConnectDenied,
+      permissionAction: HealthPermissionAction.openHealthConnect,
+    ));
+  }
+
+  Future<void> _onResumeCheck(
+    HealthSettingsResumeCheck event,
+    Emitter<HealthSettingsState> emit,
+  ) async {
+    await _refreshConnection(const NoParams());
+    final health = await _checkPermissions(const NoParams());
+    if (!health.authorized) return;
+
+    final current = state;
+    if (current is! HealthSettingsLoaded || current.status.connected) {
+      final status = await _getStatus(const NoParams());
+      if (current is HealthSettingsLoaded) {
+        emit(current.copyWith(
+          status: status,
+          clearPermissionAction: true,
+          clearMessage: true,
+        ));
+      }
+      return;
+    }
+
+    final connected = await _connect(const NoParams());
+    final status = await _getStatus(const NoParams());
+    emit(HealthSettingsLoaded(
+      status: status,
+      platformAvailable: true,
+      message: connected ? 'Health connected successfully' : null,
+    ));
   }
 
   Future<void> _onViewPermissions(

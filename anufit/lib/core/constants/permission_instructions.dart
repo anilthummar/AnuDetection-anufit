@@ -17,14 +17,26 @@ Follow these steps:
 3. Tap Physical activity
 4. Select Allow''';
 
+  static String healthConnectDenied = '''
+Health Connect access is required to sync steps and activity.
+
+Follow these steps:
+1. Tap "Grant Health Connect Access" below
+2. On the Health Connect screen, tap Allow all
+3. Return here and tap Connect
+
+Already allowed in Health Connect? Tap Grant Health Connect Access once to refresh.''';
+
+  /// App-level Android permission (separate from Health Connect data access).
   static String healthWellnessDenied = '''
-Health permission is required to sync with Health Connect.
+App permission is also required on Android.
 
 Follow these steps:
 1. Tap "Open App Permissions" below
 2. In $_appName settings, open Permissions
 3. Tap Health, fitness and wellness
-4. Select Allow all''';
+4. Select Allow all
+5. Return and tap Grant Health Connect Access''';
 
   static String activityRecognitionInSettings = '''
 Activity Recognition was denied earlier.

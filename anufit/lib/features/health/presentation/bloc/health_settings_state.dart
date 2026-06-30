@@ -3,6 +3,7 @@ part of 'health_settings_bloc.dart';
 enum HealthPermissionAction {
   grantActivityPermission,
   openAppSettings,
+  openHealthConnect,
 }
 
 sealed class HealthSettingsState extends Equatable {
@@ -44,13 +45,14 @@ final class HealthSettingsLoaded extends HealthSettingsState {
     String? message,
     HealthPermissionAction? permissionAction,
     bool clearPermissionAction = false,
+    bool clearMessage = false,
   }) {
     return HealthSettingsLoaded(
       status: status ?? this.status,
       platformAvailable: platformAvailable ?? this.platformAvailable,
       isBusy: isBusy ?? this.isBusy,
       isSyncing: isSyncing ?? this.isSyncing,
-      message: message,
+      message: clearMessage ? null : (message ?? this.message),
       permissionAction:
           clearPermissionAction ? null : (permissionAction ?? this.permissionAction),
     );

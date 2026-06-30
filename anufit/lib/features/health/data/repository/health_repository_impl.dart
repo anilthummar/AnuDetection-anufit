@@ -41,7 +41,10 @@ class HealthRepositoryImpl implements HealthRepository {
     if (!available) return false;
 
     final permissions = await requestPermissions();
-    if (!permissions.authorized) return false;
+    if (!permissions.authorized) {
+      final recheck = await checkPermissions();
+      if (!recheck.authorized) return false;
+    }
 
     _connected = true;
     final settings = await _onboardingRepository.getSettings();
@@ -137,7 +140,7 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<HealthSyncStateEntity> getSyncStatus() async {
     final sync = await _local.getSyncMeta();
-    final permissions = await _mapCachedPermissions();
+    final permissions = await checkPermissions();
     final connected = permissions.authorized && _connected;
     return _local.toSyncState(
       sync: sync,

@@ -23,6 +23,14 @@ final class HealthConnectGuidanceHandled extends HealthConnectEvent {
   const HealthConnectGuidanceHandled();
 }
 
+final class HealthConnectResumeCheck extends HealthConnectEvent {
+  const HealthConnectResumeCheck();
+}
+
+final class HealthConnectRequestHealthPermissions extends HealthConnectEvent {
+  const HealthConnectRequestHealthPermissions();
+}
+
 final class HealthConnectOpenSettingsRequested extends HealthConnectEvent {
   const HealthConnectOpenSettingsRequested();
 }
