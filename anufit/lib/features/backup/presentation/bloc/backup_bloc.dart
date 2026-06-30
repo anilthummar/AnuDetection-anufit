@@ -25,7 +25,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
         encrypt: event.encrypt,
         passphrase: event.passphrase,
       );
-      await Share.shareXFiles([XFile(file.path)], text: 'Anufit backup');
+      await Share.shareXFiles([XFile(file.path)], text: 'Step Counter backup');
       emit(BackupExported(file: file));
     } catch (e) {
       emit(BackupError(e.toString()));

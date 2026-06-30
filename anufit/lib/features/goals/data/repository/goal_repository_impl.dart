@@ -150,6 +150,7 @@ class GoalRepositoryImpl implements GoalRepository {
     );
   }
 
+  @override
   @disposeMethod
   void dispose() {
     _stepSubscription?.cancel();

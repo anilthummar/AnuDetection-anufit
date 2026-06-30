@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Anufit';
+  String get appTitle => 'Step Counter - Pedometer';
 
   @override
   String get dashboard => 'Dashboard';

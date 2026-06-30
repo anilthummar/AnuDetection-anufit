@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:excel/excel.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/features/reports/domain/entities/report_entity.dart';
 
 abstract final class ReportGenerator {
@@ -53,7 +53,7 @@ abstract final class ReportGenerator {
 
   static Future<GeneratedReport> _generateCsv(ReportData data) async {
     final buffer = StringBuffer()
-      ..writeln('Anufit Activity Report')
+      ..writeln('${AppConstants.appShortName} Activity Report')
       ..writeln('Period,${data.periodLabel}')
       ..writeln('User,${data.userName}')
       ..writeln('Total Steps,${data.totalSteps}')
@@ -79,7 +79,7 @@ abstract final class ReportGenerator {
   static Future<GeneratedReport> _generateExcel(ReportData data) async {
     final excel = Excel.createExcel();
     final sheet = excel['Report'];
-    sheet.appendRow([TextCellValue('Anufit Activity Report')]);
+    sheet.appendRow([TextCellValue('${AppConstants.appShortName} Activity Report')]);
     sheet.appendRow([TextCellValue('Period'), TextCellValue(data.periodLabel)]);
     sheet.appendRow([TextCellValue('Total Steps'), IntCellValue(data.totalSteps)]);
     sheet.appendRow([

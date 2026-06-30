@@ -122,14 +122,28 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
+  Future<void> refreshConnectionState() async {
+    final permissions = await checkPermissions();
+    _connected = permissions.authorized;
+    final settings = await _onboardingRepository.getSettings();
+    if (settings.healthConnected != permissions.authorized) {
+      await _onboardingRepository.saveSettings(
+        settings.copyWith(healthConnected: permissions.authorized),
+      );
+    }
+    await _emitStatus();
+  }
+
+  @override
   Future<HealthSyncStateEntity> getSyncStatus() async {
     final sync = await _local.getSyncMeta();
     final permissions = await _mapCachedPermissions();
+    final connected = permissions.authorized && _connected;
     return _local.toSyncState(
       sync: sync,
       permissions: permissions,
       platform: _platform.currentPlatform,
-      connected: _connected || permissions.authorized,
+      connected: connected,
     );
   }
 

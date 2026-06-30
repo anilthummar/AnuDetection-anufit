@@ -32,7 +32,7 @@ class AchievementPreview extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: achievements.length,
-              separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+              separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.md),
               itemBuilder: (context, index) {
                 final item = achievements[index];
                 return AnimatedOpacity(

@@ -53,7 +53,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
     try {
       await Share.shareXFiles(
         [XFile(event.filePath)],
-        text: 'My Anufit activity report',
+        text: 'My Step Counter activity report',
       );
     } catch (error) {
       emit(ReportError(error.toString()));

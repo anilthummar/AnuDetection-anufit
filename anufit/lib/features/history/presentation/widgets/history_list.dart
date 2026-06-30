@@ -26,7 +26,7 @@ class HistoryList extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length + (hasMore ? 1 : 0),
-      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         if (index >= items.length) {
           return TextButton(onPressed: onLoadMore, child: const Text('Load more'));

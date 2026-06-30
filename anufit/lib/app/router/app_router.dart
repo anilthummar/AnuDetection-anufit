@@ -20,6 +20,7 @@ import 'package:anufit/features/lifestyle/lifestyle_injection.dart';
 import 'package:anufit/features/backup/presentation/pages/backup_page.dart';
 import 'package:anufit/features/export/presentation/pages/export_hub_page.dart';
 import 'package:anufit/features/production/production_injection.dart';
+import 'package:anufit/features/release/presentation/pages/privacy_policy_page.dart';
 import 'package:anufit/features/release/presentation/pages/release_info_page.dart';
 import 'package:anufit/features/security/presentation/pages/security_page.dart';
 import 'package:anufit/features/sync/presentation/pages/cloud_sync_page.dart';
@@ -293,6 +294,11 @@ class AppRouter {
         path: AppRoutes.release,
         name: 'release',
         builder: (BuildContext context, GoRouterState state) => const ReleaseInfoPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacyPolicy,
+        name: 'privacyPolicy',
+        builder: (BuildContext context, GoRouterState state) => const PrivacyPolicyPage(),
       ),
     ],
   );

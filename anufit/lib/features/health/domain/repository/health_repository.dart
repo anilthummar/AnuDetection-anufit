@@ -15,4 +15,5 @@ abstract class HealthRepository {
   Stream<HealthSyncStateEntity> watchHealthStatus();
   Future<bool> connectHealth();
   Future<bool> isPlatformAvailable();
+  Future<void> refreshConnectionState();
 }

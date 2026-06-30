@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import 'package:intl/intl.dart';
 
+import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/features/achievements/domain/repository/achievement_repository.dart';
 import 'package:anufit/features/history/data/datasource/history_local_datasource.dart';
 import 'package:anufit/features/history/domain/entities/history_entity.dart';
@@ -82,7 +82,7 @@ class ReportRepositoryImpl implements ReportRepository {
     final periodLabel = '${ReportGenerator.formatDate(range.start)} – ${ReportGenerator.formatDate(range.end)}';
 
     return ReportData(
-      title: 'Anufit Activity Report',
+      title: '${AppConstants.appShortName} Activity Report',
       periodLabel: periodLabel,
       userName: user?.name?.trim().isNotEmpty == true ? user!.name! : 'Walker',
       totalSteps: steps,

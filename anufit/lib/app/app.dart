@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/app/app_preferences_controller.dart';
 import 'package:anufit/app/theme/app_theme.dart';
 import 'package:anufit/core/di/injection.dart';
+import 'package:anufit/features/health/services/health_sync_scheduler.dart';
 import 'package:anufit/l10n/app_localizations.dart';
 
 class App extends StatefulWidget {
@@ -15,12 +17,13 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends State<App> {
+class _AppState extends State<App> with WidgetsBindingObserver {
   late final AppPreferencesController _preferences;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _preferences = getIt<AppPreferencesController>();
     _preferences.load();
     _preferences.addListener(_onPreferencesChanged);
@@ -28,8 +31,16 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _preferences.removeListener(_onPreferencesChanged);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      triggerHealthSyncOnResume();
+    }
   }
 
   void _onPreferencesChanged() {
@@ -39,7 +50,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Anufit',
+      title: AppConstants.appName,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: _preferences.themeMode,
@@ -47,6 +58,7 @@ class _AppState extends State<App> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: widget.router,
+      debugShowCheckedModeBanner: false,
       builder: (context, child) {
         final media = MediaQuery.of(context);
         return MediaQuery(

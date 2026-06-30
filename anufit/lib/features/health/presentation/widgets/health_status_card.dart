@@ -35,8 +35,11 @@ class HealthStatusCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Health Connected', style: Theme.of(context).textTheme.titleMedium),
-                Text(connected ? '✓ $label' : 'Not connected'),
+                Text(
+                  connected ? 'Health Connected' : 'Health Not Connected',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(connected ? '✓ $label' : 'Tap Connect to enable $label'),
               ],
             ),
           ),

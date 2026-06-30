@@ -50,7 +50,7 @@ class WidgetSettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Add the Anufit widget from your home screen widget gallery. '
+                'Add the Step Counter widget from your home screen widget gallery. '
                 'Data refreshes when you open the app or tap Update.',
               ),
             ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:anufit/core/constants/app_spacing.dart';
 import 'package:anufit/features/statistics/domain/entities/statistics_entity.dart';
 
 class StatisticsHeader extends StatelessWidget {

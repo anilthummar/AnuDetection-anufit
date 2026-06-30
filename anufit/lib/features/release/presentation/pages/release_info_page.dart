@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/l10n/app_localizations.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
@@ -25,7 +27,7 @@ class ReleaseInfoPage extends StatelessWidget {
                   children: [
                     Text('Version ${info?.version ?? '—'} (${info?.buildNumber ?? '—'})'),
                     const SizedBox(height: 8),
-                    const Text('Anufit Health & Step Tracker'),
+                    const Text('Step Counter - Pedometer'),
                     const Text('Production build — offline-first, privacy-focused'),
                   ],
                 ),
@@ -34,20 +36,9 @@ class ReleaseInfoPage extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.privacy_tip_outlined),
                 title: const Text('Privacy Policy'),
-                subtitle: const Text('docs/release/privacy_policy.md'),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(Icons.store_outlined),
-                title: const Text('Store Listing Assets'),
-                subtitle: const Text('docs/release/store_assets.md'),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(Icons.android_outlined),
-                title: const Text('Android Signing Guide'),
-                subtitle: const Text('docs/release/android_signing.md'),
-                onTap: () {},
+                subtitle: const Text('How we handle your health and activity data'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push(AppRoutes.privacyPolicy),
               ),
             ],
           );

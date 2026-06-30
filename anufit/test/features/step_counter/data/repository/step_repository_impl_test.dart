@@ -6,7 +6,6 @@ import 'package:anufit/core/logger/app_logger.dart';
 import 'package:anufit/features/step_counter/data/datasource/step_counter_pigeon_datasource.dart';
 import 'package:anufit/features/step_counter/data/datasource/step_local_datasource.dart';
 import 'package:anufit/features/step_counter/data/models/step_tracking_state_model.dart';
-import 'package:anufit/features/step_counter/data/pigeon/step_counter_api.g.dart';
 import 'package:anufit/features/step_counter/data/repository/step_repository_impl.dart';
 import 'package:anufit/features/step_counter/domain/entities/step_data.dart';
 

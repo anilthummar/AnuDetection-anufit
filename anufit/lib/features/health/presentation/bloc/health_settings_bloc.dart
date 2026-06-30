@@ -5,7 +5,6 @@ import 'package:injectable/injectable.dart';
 import 'package:anufit/core/services/permission_service.dart';
 import 'package:anufit/core/usecase/usecase.dart';
 import 'package:anufit/features/health/domain/entities/health_entity.dart';
-import 'package:anufit/features/health/domain/repository/health_repository.dart';
 import 'package:anufit/features/health/domain/usecases/health_usecases.dart';
 
 part 'health_settings_event.dart';
@@ -20,6 +19,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     this._sync,
     this._checkPermissions,
     this._isAvailable,
+    this._refreshConnection,
     this._permissions,
   ) : super(const HealthSettingsInitial()) {
     on<HealthSettingsLoadRequested>(_onLoad);
@@ -35,6 +35,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
   final SyncHealthDataUseCase _sync;
   final CheckHealthPermissionsUseCase _checkPermissions;
   final IsHealthPlatformAvailableUseCase _isAvailable;
+  final RefreshHealthConnectionUseCase _refreshConnection;
   final PermissionService _permissions;
 
   Future<void> _onLoad(
@@ -44,10 +45,33 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     emit(const HealthSettingsLoading());
     try {
       final available = await _isAvailable(const NoParams());
-      final status = await _getStatus(const NoParams());
+      await _refreshConnection(const NoParams());
+      var status = await _getStatus(const NoParams());
+
+      if (available && !status.connected) {
+        await _permissions.requestPermission(AppPermissionType.activityRecognition);
+        final connected = await _connect(const NoParams());
+        status = await _getStatus(const NoParams());
+        if (connected) {
+          try {
+            await _sync(const SyncHealthParams(initial: true));
+            status = await _getStatus(const NoParams());
+          } catch (_) {}
+        }
+        emit(HealthSettingsLoaded(
+          status: status,
+          platformAvailable: available,
+          message: connected
+              ? 'Health connected successfully'
+              : 'Permission required — tap Connect to allow access',
+        ));
+        return;
+      }
+
       if (status.connected) {
         try {
           await _sync(const SyncHealthParams(initial: true));
+          status = await _getStatus(const NoParams());
         } catch (_) {}
       }
       emit(HealthSettingsLoaded(status: status, platformAvailable: available));
@@ -73,7 +97,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
         platformAvailable: true,
         message: connected
             ? 'Health connected — pull steps from Health Connect'
-            : 'Permission denied. Open Health Connect and allow Anufit access.',
+            : 'Permission denied. Open Health Connect and allow Step Counter access.',
       ));
     } catch (error) {
       emit(HealthSettingsError(error.toString()));

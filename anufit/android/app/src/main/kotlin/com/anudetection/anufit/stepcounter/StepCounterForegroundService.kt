@@ -56,7 +56,7 @@ class StepCounterForegroundService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Anufit")
+            .setContentTitle("Step Counter")
             .setContentText("Counting your steps")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

@@ -274,7 +274,7 @@ class StepRepositoryImpl implements StepRepository {
     DateTime moment,
     int? hardwareTotal,
   ) async {
-    var state = await _loadState();
+    final state = await _loadState();
     final timezone = moment.timeZoneName;
     final newDay = StepBaselineCalculator.isNewLocalDay(
       storedDate: state.baselineDate,

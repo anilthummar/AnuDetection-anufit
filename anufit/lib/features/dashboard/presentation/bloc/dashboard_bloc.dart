@@ -8,7 +8,6 @@ import 'package:anufit/core/exceptions/app_exception.dart';
 import 'package:anufit/core/services/permission_service.dart';
 import 'package:anufit/core/usecase/usecase.dart';
 import 'package:anufit/features/dashboard/domain/entities/dashboard_summary.dart';
-import 'package:anufit/core/services/activity_metrics_calculator.dart';
 import 'package:anufit/features/dashboard/domain/services/dashboard_calculators.dart';
 import 'package:anufit/features/dashboard/domain/usecases/dashboard_usecases.dart';
 import 'package:anufit/features/step_counter/domain/entities/step_data.dart';

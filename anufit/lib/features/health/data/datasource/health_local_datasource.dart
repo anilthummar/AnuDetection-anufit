@@ -1,5 +1,4 @@
 import 'package:injectable/injectable.dart';
-import 'package:isar_community/isar.dart';
 
 import 'package:anufit/core/database/isar_service.dart';
 import 'package:anufit/features/health/data/models/health_permission_model.dart';
@@ -22,6 +21,16 @@ class HealthLocalDatasource {
     return initial;
   }
 
+  /// Reads sync meta inside an existing write transaction (no nested txn).
+  Future<HealthSyncModel> _getOrCreateSyncMetaInTxn() async {
+    var model = await _isarService.db.healthSyncModels.get(1);
+    if (model == null) {
+      model = HealthSyncModel();
+      await _isarService.db.healthSyncModels.put(model);
+    }
+    return model;
+  }
+
   Future<void> saveSyncMeta({
     required DateTime lastSync,
     required SyncStatus status,
@@ -30,7 +39,7 @@ class HealthLocalDatasource {
     DateTime? lastIncrementalSync,
   }) async {
     await _isarService.db.writeTxn(() async {
-      final model = await getSyncMeta();
+      final model = await _getOrCreateSyncMetaInTxn();
       model
         ..lastSync = lastSync
         ..status = status.name
@@ -47,7 +56,7 @@ class HealthLocalDatasource {
     String? errorMessage,
   }) async {
     await _isarService.db.writeTxn(() async {
-      final model = await getSyncMeta();
+      final model = await _getOrCreateSyncMetaInTxn();
       model
         ..status = status.name
         ..errorMessage = errorMessage;
@@ -57,7 +66,7 @@ class HealthLocalDatasource {
 
   Future<void> clearSyncMeta() async {
     await _isarService.db.writeTxn(() async {
-      final model = await getSyncMeta();
+      final model = await _getOrCreateSyncMetaInTxn();
       model
         ..lastSync = null
         ..status = SyncStatus.disconnected.name
@@ -79,9 +88,18 @@ class HealthLocalDatasource {
     return initial;
   }
 
+  Future<HealthPermissionModel> _getOrCreatePermissionsInTxn() async {
+    var model = await _isarService.db.healthPermissionModels.get(1);
+    if (model == null) {
+      model = HealthPermissionModel();
+      await _isarService.db.healthPermissionModels.put(model);
+    }
+    return model;
+  }
+
   Future<void> savePermissions(HealthPermissionEntity entity) async {
     await _isarService.db.writeTxn(() async {
-      final model = await getPermissions();
+      final model = await _getOrCreatePermissionsInTxn();
       model
         ..steps = entity.steps
         ..distance = entity.distance

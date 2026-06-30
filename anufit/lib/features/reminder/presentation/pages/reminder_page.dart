@@ -77,7 +77,7 @@ class ReminderPage extends StatelessWidget {
                 },
               ),
               DropdownButtonFormField<ReminderRepeat>(
-                value: repeat,
+                initialValue: repeat,
                 decoration: const InputDecoration(labelText: 'Repeat'),
                 items: ReminderRepeat.values
                     .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))

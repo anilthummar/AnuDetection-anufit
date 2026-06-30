@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/app/theme/app_colors.dart';
 import 'package:anufit/core/di/injection.dart';
+import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/core/extensions/responsive_extension.dart';
 import 'package:anufit/features/splash/presentation/bloc/splash_bloc.dart';
 
@@ -68,7 +69,7 @@ class _SplashView extends StatelessWidget {
               ),
               SizedBox(height: context.responsive(phone: 24, desktop: 32)),
               Text(
-                'Anufit',
+                AppConstants.appShortName,
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
               const SizedBox(height: 24),

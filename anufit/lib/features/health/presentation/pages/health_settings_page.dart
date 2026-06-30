@@ -50,9 +50,9 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
   if (!state.platformAvailable) {
-      return Center(
+      return const Center(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: EdgeInsets.all(AppSpacing.lg),
           child: Text(
             'Health Connect is not installed or HealthKit is unavailable on this device.',
             textAlign: TextAlign.center,

@@ -27,7 +27,7 @@ void main() {
           steps: 8000,
           distanceKm: 6,
           calories: 320,
-          walkingTime: Duration(hours: 1),
+          walkingTime: const Duration(hours: 1),
           goalCompleted: false,
         ),
         DailySummaryEntity(
@@ -35,7 +35,7 @@ void main() {
           steps: 12000,
           distanceKm: 9,
           calories: 480,
-          walkingTime: Duration(hours: 1, minutes: 30),
+          walkingTime: const Duration(hours: 1, minutes: 30),
           goalCompleted: true,
         ),
       ],

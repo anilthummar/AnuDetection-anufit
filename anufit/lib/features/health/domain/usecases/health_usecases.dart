@@ -67,6 +67,13 @@ class IsHealthPlatformAvailableUseCase {
 }
 
 @injectable
+class RefreshHealthConnectionUseCase {
+  const RefreshHealthConnectionUseCase(this._repository);
+  final HealthRepository _repository;
+  Future<void> call(NoParams _) => _repository.refreshConnectionState();
+}
+
+@injectable
 class WatchHealthStatusUseCase {
   const WatchHealthStatusUseCase(this._repository);
   final HealthRepository _repository;

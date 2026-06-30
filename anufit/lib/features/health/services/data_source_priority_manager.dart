@@ -1,4 +1,3 @@
-import 'package:anufit/features/health/domain/entities/health_entity.dart';
 
 enum DataSourceType {
   manualAdjustment,

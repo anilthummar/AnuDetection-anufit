@@ -6,7 +6,7 @@ import 'package:anufit/features/reports/domain/services/report_generator.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final data = ReportData(
+  const data = ReportData(
     title: 'Test Report',
     periodLabel: 'Jun 2026',
     userName: 'Walker',

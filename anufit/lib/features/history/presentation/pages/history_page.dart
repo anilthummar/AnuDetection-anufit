@@ -9,6 +9,7 @@ import 'package:anufit/features/history/presentation/widgets/history_card.dart';
 import 'package:anufit/features/history/presentation/widgets/history_filter.dart';
 import 'package:anufit/features/history/presentation/widgets/history_list.dart';
 import 'package:anufit/core/widgets/responsive_builder.dart';
+import 'package:anufit/shared/widgets/fit_segmented_control.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -51,19 +52,16 @@ class _HistoryBody extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SegmentedButton<HistoryPeriod>(
-              segments: const [
-                ButtonSegment(value: HistoryPeriod.daily, label: Text('Daily')),
-                ButtonSegment(value: HistoryPeriod.weekly, label: Text('Weekly')),
-                ButtonSegment(value: HistoryPeriod.monthly, label: Text('Month')),
-                ButtonSegment(value: HistoryPeriod.yearly, label: Text('Year')),
-              ],
-              selected: {state.period},
-              onSelectionChanged: (s) =>
-                  context.read<HistoryBloc>().add(HistoryPeriodChanged(s.first)),
-            ),
+          FitSegmentedControl<HistoryPeriod>(
+            selected: state.period,
+            onChanged: (period) =>
+                context.read<HistoryBloc>().add(HistoryPeriodChanged(period)),
+            segments: const [
+              (value: HistoryPeriod.daily, label: 'Day'),
+              (value: HistoryPeriod.weekly, label: 'Week'),
+              (value: HistoryPeriod.monthly, label: 'Month'),
+              (value: HistoryPeriod.yearly, label: 'Year'),
+            ],
           ),
           const SizedBox(height: AppSpacing.lg),
           if (state.period == HistoryPeriod.daily) ...[

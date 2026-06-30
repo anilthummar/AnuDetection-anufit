@@ -8,7 +8,12 @@ sealed class PermissionEvent extends Equatable {
 }
 
 final class PermissionLoadStatus extends PermissionEvent {
-  const PermissionLoadStatus();
+  const PermissionLoadStatus({this.autoRequest = false});
+
+  final bool autoRequest;
+
+  @override
+  List<Object?> get props => [autoRequest];
 }
 
 final class PermissionRequestActivity extends PermissionEvent {

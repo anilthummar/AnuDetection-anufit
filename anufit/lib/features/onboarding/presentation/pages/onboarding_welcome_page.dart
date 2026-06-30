@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/core/enums/onboarding_step.dart';
+import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layout.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
@@ -14,7 +15,7 @@ class OnboardingWelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OnboardingLayout(
-      title: 'Welcome to Anufit',
+      title: 'Welcome to ${AppConstants.appShortName}',
       onContinue: () => _goNext(context, OnboardingStep.features),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

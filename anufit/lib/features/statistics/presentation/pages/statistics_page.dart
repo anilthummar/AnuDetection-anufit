@@ -7,7 +7,6 @@ import 'package:anufit/app/router/app_routes.dart';
 
 import 'package:anufit/core/constants/app_spacing.dart';
 import 'package:anufit/core/widgets/responsive_builder.dart';
-import 'package:anufit/core/enums/unit_system.dart';
 import 'package:anufit/core/utils/unit_format.dart';
 import 'package:anufit/features/statistics/domain/entities/statistics_entity.dart';
 import 'package:anufit/features/statistics/presentation/bloc/chart_bloc.dart';
@@ -18,6 +17,7 @@ import 'package:anufit/features/statistics/presentation/widgets/metric_tile.dart
 import 'package:anufit/features/statistics/presentation/widgets/statistics_header.dart';
 import 'package:anufit/features/statistics/presentation/widgets/summary_card.dart';
 import 'package:anufit/features/statistics/presentation/widgets/trend_card.dart';
+import 'package:anufit/shared/widgets/fit_segmented_control.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
@@ -53,23 +53,20 @@ class StatisticsPage extends StatelessWidget {
                     children: [
                       StatisticsHeader(period: bundle.period),
                       const SizedBox(height: AppSpacing.md),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SegmentedButton<StatisticsPeriod>(
-                          segments: const [
-                            ButtonSegment(value: StatisticsPeriod.daily, label: Text('Daily')),
-                            ButtonSegment(value: StatisticsPeriod.weekly, label: Text('Weekly')),
-                            ButtonSegment(value: StatisticsPeriod.monthly, label: Text('Monthly')),
-                            ButtonSegment(value: StatisticsPeriod.lifetime, label: Text('Life')),
-                          ],
-                          selected: {bundle.period},
-                          onSelectionChanged: (s) => context
-                              .read<StatisticsBloc>()
-                              .add(StatisticsPeriodChanged(s.first)),
-                        ),
+                      FitSegmentedControl<StatisticsPeriod>(
+                        selected: bundle.period,
+                        onChanged: (period) => context
+                            .read<StatisticsBloc>()
+                            .add(StatisticsPeriodChanged(period)),
+                        segments: const [
+                          (value: StatisticsPeriod.daily, label: 'Day'),
+                          (value: StatisticsPeriod.weekly, label: 'Week'),
+                          (value: StatisticsPeriod.monthly, label: 'Month'),
+                          (value: StatisticsPeriod.lifetime, label: 'Life'),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      SummaryCard(lifetime: bundle.lifetime),
+                      SummaryCard(lifetime: bundle.lifetime, unit: bundle.unit),
                       const SizedBox(height: AppSpacing.lg),
                       GridView.count(
                         shrinkWrap: true,
@@ -137,17 +134,18 @@ class _ChartsSection extends StatelessWidget {
             : ChartType.weekly;
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SegmentedButton<ChartType>(
+            FitSegmentedControl<ChartType>(
+              selected: type,
+              onChanged: (chartType) =>
+                  context.read<ChartBloc>().add(ChartTypeChanged(chartType)),
               segments: const [
-                ButtonSegment(value: ChartType.daily, label: Text('Daily')),
-                ButtonSegment(value: ChartType.weekly, label: Text('Weekly')),
-                ButtonSegment(value: ChartType.monthly, label: Text('Monthly')),
-                ButtonSegment(value: ChartType.yearly, label: Text('Yearly')),
+                (value: ChartType.daily, label: 'Day'),
+                (value: ChartType.weekly, label: 'Week'),
+                (value: ChartType.monthly, label: 'Month'),
+                (value: ChartType.yearly, label: 'Year'),
               ],
-              selected: {type},
-              onSelectionChanged: (s) =>
-                  context.read<ChartBloc>().add(ChartTypeChanged(s.first)),
             ),
             const SizedBox(height: AppSpacing.md),
             switch (type) {

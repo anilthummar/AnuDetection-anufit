@@ -85,6 +85,8 @@ import 'package:anufit/features/health/presentation/bloc/health_permission_cubit
     as _i1060;
 import 'package:anufit/features/health/presentation/bloc/health_settings_bloc.dart'
     as _i425;
+import 'package:anufit/features/health/services/health_permission_coordinator.dart'
+    as _i777;
 import 'package:anufit/features/health/services/health_sync_scheduler.dart'
     as _i635;
 import 'package:anufit/features/health/sync/sync_engine.dart' as _i1017;
@@ -395,12 +397,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i185.EncryptionService>(),
       ),
     );
-    gh.factory<_i362.HealthConnectBloc>(
-      () => _i362.HealthConnectBloc(
-        gh<_i758.GetAppSettingsUseCase>(),
-        gh<_i758.SaveAppSettingsUseCase>(),
-      ),
-    );
     gh.factory<_i267.SettingsBloc>(
       () => _i267.SettingsBloc(
         gh<_i364.OnboardingRepository>(),
@@ -607,6 +603,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i364.OnboardingRepository>(),
       ),
     );
+    gh.lazySingleton<_i777.HealthPermissionCoordinator>(
+      () => _i777.HealthPermissionCoordinator(
+        gh<_i571.PermissionService>(),
+        gh<_i989.HealthRepository>(),
+        gh<_i364.OnboardingRepository>(),
+      ),
+    );
     gh.factory<_i888.ChartBloc>(
       () => _i888.ChartBloc(gh<_i1043.StatisticsRepository>()),
     );
@@ -666,6 +669,9 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i894.IsHealthPlatformAvailableUseCase(gh<_i989.HealthRepository>()),
     );
+    gh.factory<_i894.RefreshHealthConnectionUseCase>(
+      () => _i894.RefreshHealthConnectionUseCase(gh<_i989.HealthRepository>()),
+    );
     gh.factory<_i894.WatchHealthStatusUseCase>(
       () => _i894.WatchHealthStatusUseCase(gh<_i989.HealthRepository>()),
     );
@@ -674,6 +680,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i530.TimelineBloc>(
       () => _i530.TimelineBloc(gh<_i1060.ActivityRepository>()),
+    );
+    gh.factory<_i362.HealthConnectBloc>(
+      () => _i362.HealthConnectBloc(
+        gh<_i758.GetAppSettingsUseCase>(),
+        gh<_i758.SaveAppSettingsUseCase>(),
+        gh<_i894.ConnectHealthUseCase>(),
+        gh<_i894.IsHealthPlatformAvailableUseCase>(),
+        gh<_i571.PermissionService>(),
+      ),
     );
     gh.factory<_i732.AchievementBloc>(
       () => _i732.AchievementBloc(
@@ -692,23 +707,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i56.AchievementRepository>(),
       ),
     );
-    gh.lazySingleton<_i635.HealthSyncScheduler>(
-      () => _i635.HealthSyncScheduler(
-        gh<_i894.SyncHealthDataUseCase>(),
-        gh<_i364.OnboardingRepository>(),
-      ),
-    );
-    gh.factory<_i425.HealthSettingsBloc>(
-      () => _i425.HealthSettingsBloc(
-        gh<_i894.GetHealthSyncStatusUseCase>(),
-        gh<_i894.ConnectHealthUseCase>(),
-        gh<_i894.DisconnectHealthUseCase>(),
-        gh<_i894.SyncHealthDataUseCase>(),
-        gh<_i894.CheckHealthPermissionsUseCase>(),
-        gh<_i894.IsHealthPlatformAvailableUseCase>(),
-        gh<_i571.PermissionService>(),
-      ),
-    );
     gh.factory<_i456.HealthBloc>(
       () => _i456.HealthBloc(
         gh<_i894.WatchHealthStatusUseCase>(),
@@ -720,6 +718,26 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i392.WidgetBloc>(
       () => _i392.WidgetBloc(gh<_i62.WidgetEngine>()),
+    );
+    gh.lazySingleton<_i635.HealthSyncScheduler>(
+      () => _i635.HealthSyncScheduler(
+        gh<_i894.SyncHealthDataUseCase>(),
+        gh<_i364.OnboardingRepository>(),
+        gh<_i777.HealthPermissionCoordinator>(),
+        gh<_i989.HealthRepository>(),
+      ),
+    );
+    gh.factory<_i425.HealthSettingsBloc>(
+      () => _i425.HealthSettingsBloc(
+        gh<_i894.GetHealthSyncStatusUseCase>(),
+        gh<_i894.ConnectHealthUseCase>(),
+        gh<_i894.DisconnectHealthUseCase>(),
+        gh<_i894.SyncHealthDataUseCase>(),
+        gh<_i894.CheckHealthPermissionsUseCase>(),
+        gh<_i894.IsHealthPlatformAvailableUseCase>(),
+        gh<_i894.RefreshHealthConnectionUseCase>(),
+        gh<_i571.PermissionService>(),
+      ),
     );
     gh.factory<_i1060.HealthPermissionCubit>(
       () => _i1060.HealthPermissionCubit(

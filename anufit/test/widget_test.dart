@@ -26,7 +26,7 @@ void main() {
         GoRoute(
           path: AppRoutes.splash,
           builder: (BuildContext context, GoRouterState state) {
-            return const Scaffold(body: Center(child: Text('Anufit')));
+            return const Scaffold(body: Center(child: Text('Step Counter')));
           },
         ),
       ],
@@ -35,6 +35,6 @@ void main() {
     await tester.pumpWidget(App(router: router));
     await tester.pumpAndSettle();
 
-    expect(find.text('Anufit'), findsOneWidget);
+    expect(find.text('Step Counter'), findsOneWidget);
   });
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/core/di/injection.dart';
+import 'package:anufit/features/health/services/health_permission_coordinator.dart';
 import 'package:anufit/features/onboarding/domain/entities/app_settings_entity.dart';
 import 'package:anufit/features/onboarding/domain/entities/user_entity.dart';
 import 'package:anufit/features/onboarding/domain/usecases/onboarding_usecases.dart';
@@ -77,6 +78,7 @@ class OnboardingFinishPage extends StatelessWidget {
 
   Future<void> _complete(BuildContext context) async {
     await getIt<CompleteOnboardingUseCase>()();
+    await getIt<HealthPermissionCoordinator>().ensureOnAppLaunch(forcePrompt: true);
     if (context.mounted) {
       context.go(AppRoutes.dashboard);
     }

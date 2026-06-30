@@ -12,17 +12,29 @@ import 'package:anufit/features/onboarding/presentation/bloc/onboarding_bloc.dar
 import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layout.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
-class OnboardingHealthPage extends StatelessWidget {
+class OnboardingHealthPage extends StatefulWidget {
   const OnboardingHealthPage({super.key});
 
   @override
+  State<OnboardingHealthPage> createState() => _OnboardingHealthPageState();
+}
+
+class _OnboardingHealthPageState extends State<OnboardingHealthPage> {
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<HealthConnectBloc>(),
+      create: (_) {
+        final bloc = getIt<HealthConnectBloc>();
+        bloc.add(const HealthConnectRequested());
+        return bloc;
+      },
       child: BlocListener<HealthConnectBloc, HealthConnectState>(
         listener: (context, state) {
-          if (state.skipped || state.connectLater) {
+          if (state.skipped || state.connectLater || state.connected) {
             _goNext(context);
+          }
+          if (state.errorMessage != null) {
+            AppSnackBar.showError(context, state.errorMessage!);
           }
         },
         child: BlocBuilder<HealthConnectBloc, HealthConnectState>(
@@ -31,15 +43,17 @@ class OnboardingHealthPage extends StatelessWidget {
             return OnboardingLayout(
               title: 'Health Integration',
               isLoading: state.isSaving,
-              onContinue: () => _goNext(context),
-              continueLabel: 'Continue',
+              continueLabel: 'Connect $platformLabel',
+              onContinue: () =>
+                  context.read<HealthConnectBloc>().add(const HealthConnectRequested()),
               secondaryAction: Column(
                 children: [
                   AppButton(
                     label: 'Connect Later',
                     variant: AppButtonVariant.secondary,
-                    onPressed: () =>
-                        context.read<HealthConnectBloc>().add(const HealthConnectLaterRequested()),
+                    onPressed: () => context
+                        .read<HealthConnectBloc>()
+                        .add(const HealthConnectLaterRequested()),
                   ),
                   AppButton(
                     label: 'Skip',
@@ -61,9 +75,9 @@ class OnboardingHealthPage extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Import steps, distance, and health data automatically. '
-                          'You can set this up later from Settings.',
+                        Text(
+                          'Step Counter needs permission to read your steps, distance, '
+                          'and activity data. Tap "$platformLabel" above to allow access.',
                         ),
                       ],
                     ),

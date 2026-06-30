@@ -21,7 +21,7 @@
     </queries>
 
     <application
-        android:label="anufit"
+        android:label="Step Counter - Pedometer"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

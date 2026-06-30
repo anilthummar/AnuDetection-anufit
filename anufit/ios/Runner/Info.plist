@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Anufit</string>
+	<string>Step Counter - Pedometer</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>anufit</string>
+	<string>Step Counter</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -48,11 +48,13 @@
 		</dict>
 	</dict>
 	<key>NSMotionUsageDescription</key>
-	<string>Anufit uses motion data to count your steps accurately.</string>
+	<string>Step Counter uses motion data to count your steps accurately.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Step Counter sends optional reminders for daily step goals and activity updates.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Anufit reads step data from Apple Health to sync your activity history.</string>
+	<string>Step Counter reads step data from Apple Health to sync your activity history.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Anufit writes step data to Apple Health when you enable sync.</string>
+	<string>Step Counter writes step data to Apple Health when you enable sync.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:anufit/app/theme/app_colors.dart';
 import 'package:anufit/core/entities/streak_info.dart';
 import 'package:anufit/core/constants/app_spacing.dart';
-import 'package:anufit/features/dashboard/domain/entities/dashboard_summary.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
 class StreakCard extends StatelessWidget {

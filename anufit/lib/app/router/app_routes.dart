@@ -26,6 +26,7 @@ abstract final class AppRoutes {
   static const String widgets = '/widgets';
   static const String security = '/security';
   static const String release = '/release';
+  static const String privacyPolicy = '/privacy-policy';
 
   static String onboardingStep(OnboardingStep step) => '$onboarding/${step.routeSuffix}';
 }

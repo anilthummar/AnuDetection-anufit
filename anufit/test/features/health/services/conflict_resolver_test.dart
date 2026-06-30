@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:anufit/features/health/domain/entities/health_entity.dart';
 import 'package:anufit/features/health/services/conflict_resolver.dart';
 import 'package:anufit/features/health/services/data_source_priority_manager.dart';
 

@@ -14,3 +14,7 @@ final class HealthConnectSkipRequested extends HealthConnectEvent {
 final class HealthConnectLaterRequested extends HealthConnectEvent {
   const HealthConnectLaterRequested();
 }
+
+final class HealthConnectRequested extends HealthConnectEvent {
+  const HealthConnectRequested();
+}

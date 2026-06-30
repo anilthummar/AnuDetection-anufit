@@ -1,5 +1,3 @@
-import 'package:anufit/core/enums/gender.dart';
-import 'package:anufit/core/enums/unit_system.dart';
 import 'package:anufit/core/services/health_metrics_engine.dart';
 import 'package:anufit/features/onboarding/domain/entities/user_entity.dart';
 

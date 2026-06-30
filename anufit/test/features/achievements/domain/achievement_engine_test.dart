@@ -5,7 +5,7 @@ import 'package:anufit/features/achievements/domain/rules/achievement_rules.dart
 import 'package:anufit/features/achievements/domain/services/achievement_engine.dart';
 
 void main() {
-  final stats = UserStats(
+  const stats = UserStats(
     todaySteps: 12000,
     lifetimeSteps: 120000,
     currentStreak: 8,

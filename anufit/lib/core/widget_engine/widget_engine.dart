@@ -25,7 +25,8 @@ class WidgetEngine {
   final WeightRepository _weight;
   final OnboardingRepository _onboarding;
 
-  static const androidProvider = 'AnufitWidgetProvider';
+  static const androidProviderQualified =
+      'com.anudetection.anufit.widget.AnufitWidgetProvider';
   static const iOSAppGroup = 'group.com.anudetection.anufit';
 
   Future<void> initialize() async {
@@ -53,7 +54,7 @@ class WidgetEngine {
     );
 
     await HomeWidget.updateWidget(
-      name: androidProvider,
+      qualifiedAndroidName: androidProviderQualified,
       iOSName: 'AnufitWidget',
     );
   }

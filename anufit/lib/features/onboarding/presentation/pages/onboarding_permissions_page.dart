@@ -17,7 +17,7 @@ class OnboardingPermissionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus()),
+      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus(autoRequest: true)),
       child: const _PermissionsView(),
     );
   }

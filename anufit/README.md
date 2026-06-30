@@ -1,31 +1,73 @@
-# Anufit
+# Step Counter - Pedometer
 
-A Flutter health and fitness application built with Clean Architecture, BLoC state management, and Isar local storage.
+> **Repository:** `AnuDetection-anufit` (GitHub repo name)  
+> **Published app:** Step Counter - Pedometer (Play Store / App Store)  
+> **Codebase:** `anufit` (Dart package and project folder)
+
+A production-grade Flutter step counter and health tracking app built with **Clean Architecture**, **BLoC** state management, and **Isar** local storage.
+
+Offline-first, privacy-focused, and designed for reliable daily step counting with optional Health Connect / Apple Health sync.
+
+| | |
+|---|---|
+| **GitHub repository** | `AnuDetection-anufit` |
+| **Display name** | Step Counter - Pedometer |
+| **Package / folder** | `anufit` |
+| **Bundle ID** | `com.anudetection.anufit` |
+| **Version** | 1.0.0+1 |
+| **Flutter SDK** | ^3.11.4 |
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3afc7c1d-5c15-4599-8760-529ca334a828" width="200" alt="Dashboard" />
+  <img src="https://github.com/user-attachments/assets/aa006e8f-3833-4c94-95d9-4d9135efad92" width="200" alt="Statistics" />
+  <img src="https://github.com/user-attachments/assets/57f6776b-d406-43a0-b8ac-0aee4084ae1d" width="200" alt="History" />
+  <img src="https://github.com/user-attachments/assets/f423bf44-78cb-4eb3-be39-e413d78d9384" width="200" alt="Goals" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0034c5dc-c251-4cf3-91e0-c5fd3fb4ab77" width="200" alt="Profile" />
+  <img src="https://github.com/user-attachments/assets/a9280f51-d355-46e1-b642-8ce6fda84970" width="200" alt="Health Sync" />
+  <img src="https://github.com/user-attachments/assets/938ae39c-669b-45ff-974c-1fbb8ffc22a2" width="200" alt="Settings" />
+  <img src="https://github.com/user-attachments/assets/9377584b-ddd4-4dca-83c6-8afcf12a01dc" width="200" alt="Onboarding" />
+</p>
+
+---
 
 ## App Overview
 
-Anufit helps users track fitness activity, view health insights, and sync data from device health platforms. The app is structured for scalability — each feature is self-contained with clear separation between data, domain, and presentation layers.
+Step Counter - Pedometer helps users track daily steps, distance, calories, and walking time. Data is stored locally on the device. Users can optionally sync with **Health Connect** (Android) or **Apple Health** (iOS), export reports, back up data, and add home screen widgets.
+
+Each feature is self-contained with clear separation between data, domain, and presentation layers.
+
+---
 
 ## Features
 
-| Feature | Branch | Status |
-|---------|--------|--------|
-| Dashboard | `feature/dashboard` | Complete |
-| Goals & Motivation | `feature/goals` | Complete |
-| History & Analytics | `feature/history` | Complete |
-| Statistics | `feature/statistics` | Complete |
-| Reports | `feature/reports` | Complete |
-| Health Sync | `feature/health` | Complete |
-| Weight Tracking | `feature/weight` | Complete |
-| Water Tracker | `feature/water` | Complete |
-| Smart Reminders | `feature/reminder` | Complete |
-| User Profile | `feature/profile` | Complete |
-| Settings | `feature/settings` | Complete |
-| Backup & Restore | `feature/backup` | Complete |
-| Home Widgets | `feature/widgets` | Complete |
-| Export Hub | `feature/export` | Complete |
-| Cloud Sync (interfaces) | `feature/sync` | Complete |
-| Security | `feature/security` | Complete |
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Dashboard | Live steps, progress ring, hourly chart, quick actions | ✅ Complete |
+| Goals & Motivation | Daily step goals, streaks, achievements | ✅ Complete |
+| History & Analytics | Activity timeline, trends | ✅ Complete |
+| Statistics | Day / week / month / year / lifetime views | ✅ Complete |
+| Reports | PDF, CSV, Excel export | ✅ Complete |
+| Health Sync | Health Connect & Apple Health integration | ✅ Complete |
+| Weight Tracking | Log and track weight over time | ✅ Complete |
+| Water Tracker | Daily water intake goals | ✅ Complete |
+| Smart Reminders | Goal and motivation notifications | ✅ Complete |
+| User Profile | Profile, BMI, stride, units | ✅ Complete |
+| Settings | Theme, language, units | ✅ Complete |
+| Backup & Restore | Encrypted local backup | ✅ Complete |
+| Home Widgets | Android & iOS widgets (steps, goal, water, weight) | ✅ Complete |
+| Export Hub | Unified data export | ✅ Complete |
+| Cloud Sync | Google Drive / iCloud interfaces | 🔶 UI only (coming soon) |
+| Security | Encrypted backups, secure storage | ✅ Complete |
+| Privacy Policy | In-app HTML policy viewer | ✅ Complete |
+| Localization | English, Hindi, Gujarati (partial) | 🔶 In progress |
+
+---
 
 ## Architecture
 
@@ -33,49 +75,55 @@ The project follows **Clean Architecture**:
 
 ```
 Presentation  →  Domain  ←  Data
-   (BLoC)      (Use Cases)   (Repository / Isar / API)
+   (BLoC)      (Use Cases)   (Repository / Isar / Native)
 ```
 
-- **Domain** — pure Dart: entities, repository contracts, use cases
-- **Data** — repository implementations, datasources, models (Isar, API)
-- **Presentation** — BLoC, pages, widgets
+| Layer | Responsibility |
+|-------|----------------|
+| **Domain** | Entities, repository contracts, use cases (pure Dart) |
+| **Data** | Repository implementations, datasources, Isar models, Pigeon APIs |
+| **Presentation** | BLoC, pages, widgets |
 
-See [docs/architecture/](docs/architecture/) for detailed diagrams and decisions.
+See [docs/architecture/](docs/architecture/) for diagrams and decisions.
 
 ### Feature development workflow
-
-Every feature follows the same sequence:
 
 ```
 Requirement → Architecture → Folder Structure → Entities → Database
     → Repository → UseCases → Bloc → UI → Testing
 ```
 
-See [docs/architecture/development-workflow.md](docs/architecture/development-workflow.md) for step-by-step checklists.
+Step-by-step checklists: [docs/architecture/development-workflow.md](docs/architecture/development-workflow.md)
+
+---
 
 ## Folder Structure
 
 ```
 lib/
-├── app/                  # App shell: bootstrap, router, theme, config
-├── core/                 # Shared infrastructure (DI, network, logger, etc.)
-├── features/             # Feature modules (clean architecture per feature)
+├── app/                  # Bootstrap, router, theme, preferences
+├── core/                   # DI, database, logger, services, engines
+├── features/               # Feature modules (clean architecture each)
 │   └── dashboard/
 │       ├── data/
 │       ├── domain/
-│       ├── presentation/
-│       └── bindings/
-├── shared/               # Cross-feature widgets, models, helpers
-├── generated/            # Code-gen output
+│       └── presentation/
+├── shared/                 # Design system, cross-feature widgets
+├── l10n/                   # Localization (ARB files)
 └── main.dart
 
 assets/
-├── images/ icons/ animations/ fonts/
-├── lottie/ svg/ translations/ json/
+├── images/ icons/ animations/ lottie/ svg/
+├── legal/                  # Privacy policy HTML
+└── json/
 
-docs/                     # Project documentation
-scripts/                  # Build, test, and codegen scripts
+android/                    # Kotlin step counter, widgets, Health Connect
+ios/                        # HealthKit, widgets
+docs/                       # Architecture, design, release docs
+scripts/                    # Build, test, analyze scripts
 ```
+
+---
 
 ## Setup
 
@@ -83,7 +131,8 @@ scripts/                  # Build, test, and codegen scripts
 
 - Flutter SDK `^3.11.4`
 - Dart SDK `^3.11.4`
-- Xcode (iOS) / Android Studio (Android)
+- Xcode 15+ (iOS, deployment target 14.0+)
+- Android Studio (Android, minSdk 26)
 
 ### Install
 
@@ -91,11 +140,12 @@ scripts/                  # Build, test, and codegen scripts
 git clone <repo-url>
 cd anufit
 flutter pub get
+dart run build_runner build
 ```
 
 ### Environment
 
-Copy and configure environment files at the project root:
+Configure environment files at the project root:
 
 | File | Environment |
 |------|-------------|
@@ -103,36 +153,56 @@ Copy and configure environment files at the project root:
 | `.env.staging` | Staging |
 | `.env.production` | Production |
 
-Replace placeholder `API_BASE_URL` values before running against real backends.
+Replace placeholder `API_BASE_URL` values before connecting to real backends. The app is **offline-first** — no backend is required for core step tracking.
 
-## Development Guide
+### Android release signing
+
+Create `android/key.properties` before publishing to Google Play. See [docs/release/android_signing.md](docs/release/android_signing.md).
+
+---
+
+## Development
 
 ### Run the app
 
 ```bash
+flutter run
+# or with environment:
 flutter run --dart-define=ENV=dev
 ```
 
-### Common scripts
+VS Code launch configs are available under **Step Counter - Pedometer** in `.vscode/launch.json`.
+
+### Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `./scripts/analyze.sh` | Run static analysis |
-| `./scripts/test.sh` | Run unit & widget tests |
-| `./scripts/test.sh --coverage` | Run tests with coverage |
-| `./scripts/gen.sh` | Run `build_runner` code generation |
-| `./scripts/build.sh dev apk` | Build release APK (dev flavor) |
+| `./scripts/analyze.sh` | Static analysis |
+| `./scripts/test.sh` | Unit & widget tests |
+| `./scripts/test.sh --coverage` | Tests with coverage |
+| `./scripts/gen.sh` | `build_runner` code generation |
+| `./scripts/build.sh dev apk` | Release APK |
 | `./scripts/clean.sh` | Clean build artifacts |
+
+### Common commands
+
+```bash
+flutter analyze
+flutter test
+flutter build apk --release
+flutter build appbundle --release
+flutter build ios --release
+```
 
 ### Adding a new feature
 
-Follow the [development workflow](docs/architecture/development-workflow.md):
-
-1. Write requirement & confirm Figma is **Ready**
-2. Scaffold `lib/features/<name>/` from the dashboard template
-3. Build bottom-up: Entities → Database → Repository → UseCases → Bloc → UI
-4. Add tests and register DI in `bindings/`
+1. Scaffold `lib/features/<name>/` following an existing feature
+2. Build bottom-up: Entities → Database → Repository → UseCases → Bloc → UI
+3. Register DI via `@injectable` and run `dart run build_runner build`
+4. Add tests under `test/features/<name>/`
 5. Branch from `develop`: `git checkout -b feature/<name> develop`
+
+---
 
 ## Branch Strategy
 
@@ -142,99 +212,94 @@ develop       ← integration branch
 feature/*     ← short-lived feature branches
 ```
 
-### Workflow
-
-1. Branch from `develop`: `git checkout -b feature/dashboard develop`
+1. Branch from `develop`
 2. Implement and open PR into `develop`
 3. After QA, merge `develop` → `main` for release
 
-### Example branches
+---
 
-- `feature/dashboard`
-- `feature/history`
-- `feature/settings`
-- `feature/health_sync`
+## Tech Stack
+
+| Area | Technology |
+|------|------------|
+| State management | `flutter_bloc`, `equatable` |
+| DI | `get_it`, `injectable` |
+| Routing | `go_router` |
+| Database | `isar_community` |
+| Health | `health` (Health Connect / HealthKit) |
+| Native steps | Pigeon + Android `SensorManager` + foreground service |
+| Charts | `fl_chart` |
+| Widgets | `home_widget` |
+| Notifications | `flutter_local_notifications` |
+| Security | `flutter_secure_storage`, `encrypt` |
+| i18n | `flutter_localizations`, ARB files |
+
+---
+
+## Permissions
+
+| Permission | Android | iOS | Purpose |
+|------------|---------|-----|---------|
+| Activity recognition | ✅ | Motion & Fitness | Step counting |
+| Notifications | ✅ | ✅ | Reminders |
+| Health Connect / HealthKit | ✅ | ✅ | Optional health sync |
+| Foreground service | ✅ | — | Background step tracking |
+
+Permissions are requested during onboarding and re-checked when the app resumes if revoked in system settings.
+
+---
+
+## Roadmap
+
+### Completed
+
+- [x] Foundation — DI, routing, theme, Isar
+- [x] Onboarding & permissions flow
+- [x] Native step counter (Pigeon, sensors, baseline, midnight reset)
+- [x] Dashboard with live updates
+- [x] Goals, achievements, activity timeline
+- [x] History, statistics, reports
+- [x] Health Connect & Apple Health
+- [x] Weight, water, reminders, profile, settings
+- [x] Backup, widgets, export, security, privacy policy
+- [x] Bottom navigation shell
+
+### Planned (AnuDetection vision)
+
+- [ ] AI walking coach with personalized daily goals
+- [ ] Indoor / outdoor activity detection
+- [ ] Automatic walking, running, and cycling recognition
+- [ ] Route tracking with GPS (optional)
+- [ ] Friends, challenges, and leaderboards
+- [ ] Wear OS & Apple Watch companion apps
+- [ ] Voice assistant integration
+- [ ] Dynamic Island live activity (iOS)
+- [ ] Full Hindi & Gujarati localization
+- [ ] Google Drive & iCloud cloud sync
+
+---
+
+## Documentation
+
+| Path | Contents |
+|------|----------|
+| [docs/architecture/](docs/architecture/) | Architecture decisions & data flow |
+| [docs/design/figma/](docs/design/figma/) | UI/UX specs & design tokens |
+| [docs/release/](docs/release/) | Privacy policy, signing, store assets |
+| [assets/legal/privacy_policy.html](assets/legal/privacy_policy.html) | Store-ready privacy policy |
+
+---
 
 ## Coding Standards
 
 Enforced via `analysis_options.yaml` and `.cursor/rules/`:
 
 - Strict analyzer mode (`strict-casts`, `strict-inference`, `strict-raw-types`)
-- `avoid_print` — use logger
-- `avoid_dynamic_calls` / `avoid_annotating_with_dynamic`
+- `avoid_print` — use `AppLogger`
 - `prefer_const` / `prefer_final`
 - `always_use_package_imports`
 
-Cursor rules provide additional guidance for architecture, BLoC, database, UI, testing, and native code.
-
-## Packages (Staged Rollout)
-
-Packages are added incrementally — **not all installed upfront**.
-
-### Stage 1 — Foundation ✅
-
-| Package | Purpose | Status |
-|---------|---------|--------|
-| `flutter_bloc` | State management | Installed |
-| `equatable` | Value equality for states/events | Installed |
-| `get_it` | Service locator | Installed |
-| `injectable` | DI code generation | Installed |
-| `go_router` | Declarative routing | Installed |
-| `flutter_dotenv` | Environment file loading | Installed |
-| `logger` | Structured logging | Installed |
-
-### Stage 2 — Database
-
-| Package | Purpose |
-|---------|---------|
-| `isar` | Local NoSQL database |
-| `isar_flutter_libs` | Isar Flutter bindings |
-
-### Stage 3 — Code Generation
-
-| Package | Purpose |
-|---------|---------|
-| `freezed` / `freezed_annotation` | Immutable models & unions |
-| `json_annotation` / `json_serializable` | JSON serialization |
-| `build_runner` | Code generation runner |
-| `injectable_generator` | DI codegen |
-| `isar_generator` | Isar schema codegen |
-
-### Stage 4 — Utilities
-
-| Package | Purpose |
-|---------|---------|
-| `intl` | Internationalization |
-| `logger` | Structured logging |
-| `permission_handler` | Runtime permissions |
-| `package_info_plus` | App version info |
-| `device_info_plus` | Device metadata |
-| `path_provider` | File system paths |
-| `shared_preferences` | Key-value storage |
-
-## Roadmap
-
-- [x] **Phase 1** — Foundation packages, DI, routing, theme
-- [x] **Phase 2** — Isar setup, core database layer (`isar_community`)
-- [x] **Phase 3** — Splash, onboarding & initial setup
-- [x] **Phase 4** — Native step counter engine (Pigeon, sensors, Isar, baseline)
-- [x] **Phase 5** — Dashboard home screen with live activity overview
-- [x] **Phase 6** — Goals, activity timeline, achievements & insights
-- [x] **Phase 7** — History, statistics & reports
-- [x] **Phase 8** — Health Connect & Apple Health integration
-- [x] **Phase 9** — Weight, water, reminders, profile & settings
-- [x] **Phase 10** — Backup, widgets, export, security, localization, CI/CD & release
-
-## Documentation
-
-| Path | Contents |
-|------|----------|
-| [docs/architecture/](docs/architecture/) | Architecture decisions & diagrams |
-| [docs/api/](docs/api/) | API contracts & endpoints |
-| [docs/database/](docs/database/) | Isar schemas & migrations |
-| [docs/design/](docs/design/) | UI/UX specs & design tokens |
-| [docs/features/](docs/features/) | Per-feature specs |
-| [docs/assets/](docs/assets/) | Asset naming & usage guide |
+---
 
 ## License
 

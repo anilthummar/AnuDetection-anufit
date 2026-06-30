@@ -9,7 +9,7 @@ class AppLocalizationsGu extends AppLocalizations {
   AppLocalizationsGu([String locale = 'gu']) : super(locale);
 
   @override
-  String get appTitle => 'Anufit';
+  String get appTitle => 'Step Counter - Pedometer';
 
   @override
   String get dashboard => 'ડેશબોર્ડ';
