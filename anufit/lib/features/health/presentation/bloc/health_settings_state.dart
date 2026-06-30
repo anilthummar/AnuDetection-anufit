@@ -1,5 +1,10 @@
 part of 'health_settings_bloc.dart';
 
+enum HealthPermissionAction {
+  grantActivityPermission,
+  openAppSettings,
+}
+
 sealed class HealthSettingsState extends Equatable {
   const HealthSettingsState();
   @override
@@ -21,6 +26,7 @@ final class HealthSettingsLoaded extends HealthSettingsState {
     this.isBusy = false,
     this.isSyncing = false,
     this.message,
+    this.permissionAction,
   });
 
   final HealthSyncStateEntity status;
@@ -28,6 +34,7 @@ final class HealthSettingsLoaded extends HealthSettingsState {
   final bool isBusy;
   final bool isSyncing;
   final String? message;
+  final HealthPermissionAction? permissionAction;
 
   HealthSettingsLoaded copyWith({
     HealthSyncStateEntity? status,
@@ -35,6 +42,8 @@ final class HealthSettingsLoaded extends HealthSettingsState {
     bool? isBusy,
     bool? isSyncing,
     String? message,
+    HealthPermissionAction? permissionAction,
+    bool clearPermissionAction = false,
   }) {
     return HealthSettingsLoaded(
       status: status ?? this.status,
@@ -42,12 +51,14 @@ final class HealthSettingsLoaded extends HealthSettingsState {
       isBusy: isBusy ?? this.isBusy,
       isSyncing: isSyncing ?? this.isSyncing,
       message: message,
+      permissionAction:
+          clearPermissionAction ? null : (permissionAction ?? this.permissionAction),
     );
   }
 
   @override
   List<Object?> get props =>
-      [status, platformAvailable, isBusy, isSyncing, message];
+      [status, platformAvailable, isBusy, isSyncing, message, permissionAction];
 }
 
 final class HealthSettingsError extends HealthSettingsState {

@@ -23,25 +23,12 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
     Emitter<PermissionState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    var activity = await _permissionService.checkPermission(
+    final activity = await _permissionService.checkPermission(
       AppPermissionType.activityRecognition,
     );
-    var notifications = await _permissionService.checkPermission(
+    final notifications = await _permissionService.checkPermission(
       AppPermissionType.notifications,
     );
-
-    if (event.autoRequest) {
-      if (!activity.isGranted && !activity.isPermanentlyDenied) {
-        activity = await _permissionService.requestPermission(
-          AppPermissionType.activityRecognition,
-        );
-      }
-      if (!notifications.isGranted && !notifications.isPermanentlyDenied) {
-        notifications = await _permissionService.requestPermission(
-          AppPermissionType.notifications,
-        );
-      }
-    }
 
     emit(
       state.copyWith(
@@ -85,5 +72,19 @@ class PermissionBloc extends Bloc<PermissionEvent, PermissionState> {
     Emitter<PermissionState> emit,
   ) async {
     await _permissionService.openSettings();
+    final activity = await _permissionService.checkPermission(
+      AppPermissionType.activityRecognition,
+    );
+    final notifications = await _permissionService.checkPermission(
+      AppPermissionType.notifications,
+    );
+    emit(
+      state.copyWith(
+        activityGranted: activity.isGranted,
+        notificationsGranted: notifications.isGranted,
+        activityDeniedPermanently: activity.isPermanentlyDenied,
+        notificationsDeniedPermanently: notifications.isPermanentlyDenied,
+      ),
+    );
   }
 }

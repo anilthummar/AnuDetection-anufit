@@ -11,6 +11,7 @@ import 'package:anufit/features/onboarding/presentation/bloc/health_connect_bloc
 import 'package:anufit/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layout.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
+import 'package:anufit/shared/widgets/permission_guide_card.dart';
 
 class OnboardingHealthPage extends StatefulWidget {
   const OnboardingHealthPage({super.key});
@@ -19,22 +20,39 @@ class OnboardingHealthPage extends StatefulWidget {
   State<OnboardingHealthPage> createState() => _OnboardingHealthPageState();
 }
 
-class _OnboardingHealthPageState extends State<OnboardingHealthPage> {
+class _OnboardingHealthPageState extends State<OnboardingHealthPage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      final bloc = context.read<HealthConnectBloc>();
+      if (!bloc.state.connected) {
+        bloc.add(const HealthConnectGuidanceHandled());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) {
-        final bloc = getIt<HealthConnectBloc>();
-        bloc.add(const HealthConnectRequested());
-        return bloc;
-      },
+      create: (_) => getIt<HealthConnectBloc>(),
       child: BlocListener<HealthConnectBloc, HealthConnectState>(
+        listenWhen: (prev, curr) =>
+            curr.skipped || curr.connectLater || curr.connected,
         listener: (context, state) {
           if (state.skipped || state.connectLater || state.connected) {
             _goNext(context);
-          }
-          if (state.errorMessage != null) {
-            AppSnackBar.showError(context, state.errorMessage!);
           }
         },
         child: BlocBuilder<HealthConnectBloc, HealthConnectState>(
@@ -48,6 +66,30 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> {
                   context.read<HealthConnectBloc>().add(const HealthConnectRequested()),
               secondaryAction: Column(
                 children: [
+                  if (state.errorMessage != null) ...[
+                    PermissionGuideCard(
+                      message: state.errorMessage!,
+                      actionLabel: state.guidance == HealthConnectGuidance.grantActivityPermission
+                          ? 'Grant Activity Permission'
+                          : 'Open App Permissions',
+                      onAction: () {
+                        if (state.guidance == HealthConnectGuidance.grantActivityPermission) {
+                          context.push(AppRoutes.permissions).then((_) {
+                            if (context.mounted) {
+                              context
+                                  .read<HealthConnectBloc>()
+                                  .add(const HealthConnectGuidanceHandled());
+                            }
+                          });
+                        } else {
+                          context
+                              .read<HealthConnectBloc>()
+                              .add(const HealthConnectOpenSettingsRequested());
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   AppButton(
                     label: 'Connect Later',
                     variant: AppButtonVariant.secondary,

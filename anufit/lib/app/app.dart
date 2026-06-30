@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/app/app_preferences_controller.dart';
+import 'package:anufit/app/permission_resume_handler.dart';
 import 'package:anufit/app/theme/app_theme.dart';
 import 'package:anufit/core/di/injection.dart';
-import 'package:anufit/features/health/services/health_sync_scheduler.dart';
 import 'package:anufit/l10n/app_localizations.dart';
 
 class App extends StatefulWidget {
@@ -39,7 +39,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      triggerHealthSyncOnResume();
+      handlePermissionResume(widget.router);
     }
   }
 

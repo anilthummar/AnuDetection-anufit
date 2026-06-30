@@ -25,3 +25,7 @@ final class HealthSyncNowRequested extends HealthSettingsEvent {
 final class HealthViewPermissionsRequested extends HealthSettingsEvent {
   const HealthViewPermissionsRequested();
 }
+
+final class HealthSettingsOpenAppSettingsRequested extends HealthSettingsEvent {
+  const HealthSettingsOpenAppSettingsRequested();
+}

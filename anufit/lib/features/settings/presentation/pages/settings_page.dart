@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:anufit/app/router/app_routes.dart';
+import 'package:anufit/core/constants/release_features.dart';
 import 'package:anufit/core/enums/unit_system.dart';
 import 'package:anufit/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:anufit/features/settings/presentation/widgets/settings_section.dart';
@@ -88,10 +89,11 @@ class SettingsPage extends StatelessWidget {
                         title: l10n.backup,
                         onTap: () => context.push(AppRoutes.backup),
                       ),
-                      SettingsTile(
-                        title: l10n.cloudSync,
-                        onTap: () => context.push(AppRoutes.cloudSync),
-                      ),
+                      if (ReleaseFeatures.cloudSync)
+                        SettingsTile(
+                          title: l10n.cloudSync,
+                          onTap: () => context.push(AppRoutes.cloudSync),
+                        ),
                       SettingsTile(
                         title: l10n.widgets,
                         onTap: () => context.push(AppRoutes.widgets),
@@ -114,7 +116,7 @@ class SettingsPage extends StatelessWidget {
                     children: [
                       SettingsTile(
                         title: 'Profile',
-                        onTap: () => context.push(AppRoutes.profile),
+                        onTap: () => context.go(AppRoutes.profile),
                       ),
                       SettingsTile(
                         title: l10n.releaseInfo,
@@ -142,10 +144,12 @@ class SettingsPage extends StatelessWidget {
     String current,
     AppLocalizations l10n,
   ) async {
-    final options = {
+    final options = <String, String>{
       'en': l10n.languageEnglish,
-      'hi': l10n.languageHindi,
-      'gu': l10n.languageGujarati,
+      if (ReleaseFeatures.partialLocales) ...{
+        'hi': l10n.languageHindi,
+        'gu': l10n.languageGujarati,
+      },
     };
     final picked = await showDialog<String>(
       context: context,

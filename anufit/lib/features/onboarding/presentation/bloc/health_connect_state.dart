@@ -1,5 +1,11 @@
 part of 'health_connect_bloc.dart';
 
+enum HealthConnectGuidance {
+  grantActivityPermission,
+  openAppSettingsForActivity,
+  openAppSettingsForHealth,
+}
+
 class HealthConnectState extends Equatable {
   const HealthConnectState({
     this.skipped = false,
@@ -7,6 +13,7 @@ class HealthConnectState extends Equatable {
     this.connected = false,
     this.isSaving = false,
     this.errorMessage,
+    this.guidance,
   });
 
   final bool skipped;
@@ -14,6 +21,7 @@ class HealthConnectState extends Equatable {
   final bool connected;
   final bool isSaving;
   final String? errorMessage;
+  final HealthConnectGuidance? guidance;
 
   HealthConnectState copyWith({
     bool? skipped,
@@ -21,7 +29,9 @@ class HealthConnectState extends Equatable {
     bool? connected,
     bool? isSaving,
     String? errorMessage,
+    HealthConnectGuidance? guidance,
     bool clearError = false,
+    bool clearGuidance = false,
   }) {
     return HealthConnectState(
       skipped: skipped ?? this.skipped,
@@ -29,9 +39,10 @@ class HealthConnectState extends Equatable {
       connected: connected ?? this.connected,
       isSaving: isSaving ?? this.isSaving,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      guidance: clearGuidance ? null : (guidance ?? this.guidance),
     );
   }
 
   @override
-  List<Object?> get props => [skipped, connectLater, connected, isSaving, errorMessage];
+  List<Object?> get props => [skipped, connectLater, connected, isSaving, errorMessage, guidance];
 }

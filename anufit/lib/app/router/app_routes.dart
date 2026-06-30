@@ -18,6 +18,7 @@ abstract final class AppRoutes {
   static const String water = '/water';
   static const String reminder = '/reminder';
   static const String profile = '/profile';
+  static const String permissions = '/permissions';
   static const String healthSync = '/health-sync';
 
   static const String backup = '/backup';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:anufit/app/permission_resume_handler.dart';
 import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/app/theme/app_colors.dart';
 import 'package:anufit/core/di/injection.dart';
@@ -31,6 +32,7 @@ class _SplashView extends StatelessWidget {
         switch (state) {
           case SplashNavigateDashboard():
             context.go(AppRoutes.dashboard);
+            handlePermissionResume(GoRouter.of(context));
           case SplashNavigateOnboarding(:final step):
             context.go(AppRoutes.onboardingStep(step));
           case SplashError(:final message):

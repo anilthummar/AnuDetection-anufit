@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/core/constants/app_spacing.dart';
 import 'package:anufit/core/widgets/responsive_builder.dart';
 import 'package:anufit/features/health/presentation/bloc/health_settings_bloc.dart';
@@ -10,6 +12,7 @@ import 'package:anufit/features/health/presentation/widgets/permission_tile.dart
 import 'package:anufit/features/health/presentation/widgets/sync_progress_dialog.dart';
 import 'package:anufit/features/health/presentation/widgets/sync_status_card.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
+import 'package:anufit/shared/widgets/permission_guide_card.dart';
 
 class HealthSettingsPage extends StatelessWidget {
   const HealthSettingsPage({super.key});
@@ -21,7 +24,9 @@ class HealthSettingsPage extends StatelessWidget {
       body: ResponsiveContainer(
         child: BlocConsumer<HealthSettingsBloc, HealthSettingsState>(
           listener: (context, state) {
-            if (state is HealthSettingsLoaded && state.message != null) {
+            if (state is HealthSettingsLoaded &&
+                state.message != null &&
+                state.permissionAction == null) {
               AppSnackBar.show(context, state.message!);
             }
             if (state is HealthSettingsError) {
@@ -77,6 +82,24 @@ class _Body extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         PermissionsSection(permissions: state.status.permissions),
         const SizedBox(height: AppSpacing.lg),
+        if (state.message != null && state.permissionAction != null) ...[
+          PermissionGuideCard(
+            message: state.message!,
+            actionLabel: state.permissionAction == HealthPermissionAction.grantActivityPermission
+                ? 'Grant Activity Permission'
+                : 'Open App Permissions',
+            onAction: () {
+              if (state.permissionAction == HealthPermissionAction.grantActivityPermission) {
+                context.push(AppRoutes.permissions);
+              } else {
+                context
+                    .read<HealthSettingsBloc>()
+                    .add(const HealthSettingsOpenAppSettingsRequested());
+              }
+            },
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
         if (!state.status.connected)
           AppButton(
             label: 'Connect',

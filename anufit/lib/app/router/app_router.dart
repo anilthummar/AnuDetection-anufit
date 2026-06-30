@@ -26,6 +26,7 @@ import 'package:anufit/features/security/presentation/pages/security_page.dart';
 import 'package:anufit/features/sync/presentation/pages/cloud_sync_page.dart';
 import 'package:anufit/features/widgets/presentation/pages/widget_settings_page.dart';
 import 'package:anufit/features/motivation/motivation_injection.dart';
+import 'package:anufit/features/permissions/presentation/pages/permissions_page.dart';
 import 'package:anufit/features/profile/presentation/pages/profile_page.dart';
 import 'package:anufit/features/reminder/presentation/pages/reminder_page.dart';
 import 'package:anufit/features/reports/presentation/pages/reports_page.dart';
@@ -234,6 +235,11 @@ class AppRouter {
             child: const ReminderPage(),
           );
         },
+      ),
+      GoRoute(
+        path: AppRoutes.permissions,
+        name: 'permissions',
+        builder: (BuildContext context, GoRouterState state) => const PermissionsPage(),
       ),
       GoRoute(
         path: AppRoutes.settings,

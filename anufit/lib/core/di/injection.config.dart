@@ -681,15 +681,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i530.TimelineBloc>(
       () => _i530.TimelineBloc(gh<_i1060.ActivityRepository>()),
     );
-    gh.factory<_i362.HealthConnectBloc>(
-      () => _i362.HealthConnectBloc(
-        gh<_i758.GetAppSettingsUseCase>(),
-        gh<_i758.SaveAppSettingsUseCase>(),
-        gh<_i894.ConnectHealthUseCase>(),
-        gh<_i894.IsHealthPlatformAvailableUseCase>(),
-        gh<_i571.PermissionService>(),
-      ),
-    );
     gh.factory<_i732.AchievementBloc>(
       () => _i732.AchievementBloc(
         gh<_i56.AchievementRepository>(),
@@ -743,6 +734,16 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1060.HealthPermissionCubit(
         gh<_i894.CheckHealthPermissionsUseCase>(),
         gh<_i894.RequestHealthPermissionsUseCase>(),
+      ),
+    );
+    gh.factory<_i362.HealthConnectBloc>(
+      () => _i362.HealthConnectBloc(
+        gh<_i758.GetAppSettingsUseCase>(),
+        gh<_i758.SaveAppSettingsUseCase>(),
+        gh<_i894.ConnectHealthUseCase>(),
+        gh<_i894.IsHealthPlatformAvailableUseCase>(),
+        gh<_i894.CheckHealthPermissionsUseCase>(),
+        gh<_i571.PermissionService>(),
       ),
     );
     return this;

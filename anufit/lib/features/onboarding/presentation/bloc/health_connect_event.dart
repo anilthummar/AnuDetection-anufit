@@ -18,3 +18,11 @@ final class HealthConnectLaterRequested extends HealthConnectEvent {
 final class HealthConnectRequested extends HealthConnectEvent {
   const HealthConnectRequested();
 }
+
+final class HealthConnectGuidanceHandled extends HealthConnectEvent {
+  const HealthConnectGuidanceHandled();
+}
+
+final class HealthConnectOpenSettingsRequested extends HealthConnectEvent {
+  const HealthConnectOpenSettingsRequested();
+}

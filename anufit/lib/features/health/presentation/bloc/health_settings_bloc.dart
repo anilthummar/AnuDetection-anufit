@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
+import 'package:anufit/core/constants/permission_instructions.dart';
 import 'package:anufit/core/services/permission_service.dart';
 import 'package:anufit/core/usecase/usecase.dart';
 import 'package:anufit/features/health/domain/entities/health_entity.dart';
@@ -27,6 +28,7 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
     on<HealthDisconnectRequested>(_onDisconnect);
     on<HealthSyncNowRequested>(_onSync);
     on<HealthViewPermissionsRequested>(_onViewPermissions);
+    on<HealthSettingsOpenAppSettingsRequested>(_onOpenAppSettings);
   }
 
   final GetHealthSyncStatusUseCase _getStatus;
@@ -49,7 +51,23 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
       var status = await _getStatus(const NoParams());
 
       if (available && !status.connected) {
-        await _permissions.requestPermission(AppPermissionType.activityRecognition);
+        final activity = await _permissions.checkPermission(
+          AppPermissionType.activityRecognition,
+        );
+        if (!activity.isGranted) {
+          emit(HealthSettingsLoaded(
+            status: status,
+            platformAvailable: available,
+            message: activity.isPermanentlyDenied
+                ? PermissionInstructions.physicalActivityDenied
+                : PermissionInstructions.grantActivityRecognition,
+            permissionAction: activity.isPermanentlyDenied
+                ? HealthPermissionAction.openAppSettings
+                : HealthPermissionAction.grantActivityPermission,
+          ));
+          return;
+        }
+
         final connected = await _connect(const NoParams());
         status = await _getStatus(const NoParams());
         if (connected) {
@@ -89,15 +107,35 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
       emit(current.copyWith(isBusy: true));
     }
     try {
-      await _permissions.requestPermission(AppPermissionType.activityRecognition);
+      final activity = await _permissions.checkPermission(
+        AppPermissionType.activityRecognition,
+      );
+      if (!activity.isGranted) {
+        final status = await _getStatus(const NoParams());
+        emit(HealthSettingsLoaded(
+          status: status,
+          platformAvailable: true,
+          isBusy: false,
+          message: activity.isPermanentlyDenied
+              ? PermissionInstructions.physicalActivityDenied
+              : PermissionInstructions.grantActivityRecognition,
+          permissionAction: activity.isPermanentlyDenied
+              ? HealthPermissionAction.openAppSettings
+              : HealthPermissionAction.grantActivityPermission,
+        ));
+        return;
+      }
+
       final connected = await _connect(const NoParams());
       final status = await _getStatus(const NoParams());
       emit(HealthSettingsLoaded(
         status: status,
         platformAvailable: true,
+        isBusy: false,
         message: connected
             ? 'Health connected — pull steps from Health Connect'
-            : 'Permission denied. Open Health Connect and allow Step Counter access.',
+            : PermissionInstructions.healthWellnessDenied,
+        permissionAction: connected ? null : HealthPermissionAction.openAppSettings,
       ));
     } catch (error) {
       emit(HealthSettingsError(error.toString()));
@@ -130,6 +168,17 @@ class HealthSettingsBloc extends Bloc<HealthSettingsEvent, HealthSettingsState> 
       ));
     } catch (error) {
       emit(HealthSettingsError(error.toString()));
+    }
+  }
+
+  Future<void> _onOpenAppSettings(
+    HealthSettingsOpenAppSettingsRequested event,
+    Emitter<HealthSettingsState> emit,
+  ) async {
+    await _permissions.openSettings();
+    final current = state;
+    if (current is HealthSettingsLoaded) {
+      emit(current.copyWith(clearPermissionAction: true));
     }
   }
 
