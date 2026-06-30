@@ -22,7 +22,7 @@ Offline-first, privacy-focused, and designed for reliable daily step counting wi
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3afc7c1d-5c15-4599-8760-529ca334a828" width="200" alt="Dashboard" />
+  <img src="https://github.com/user-attachments/assets/e21f322e-a532-4691-88c3-e1424efb0b01" width="200" alt="Dashboard" />
   <img src="https://github.com/user-attachments/assets/aa006e8f-3833-4c94-95d9-4d9135efad92" width="200" alt="Statistics" />
   <img src="https://github.com/user-attachments/assets/57f6776b-d406-43a0-b8ac-0aee4084ae1d" width="200" alt="History" />
   <img src="https://github.com/user-attachments/assets/f423bf44-78cb-4eb3-be39-e413d78d9384" width="200" alt="Goals" />
