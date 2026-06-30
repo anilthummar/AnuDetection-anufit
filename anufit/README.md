@@ -30,7 +30,6 @@ Offline-first, privacy-focused, and designed for reliable daily step counting wi
 <p align="center">
   <img src="https://github.com/user-attachments/assets/e21f322e-a532-4691-88c3-e1424efb0b01" width="200" alt="Health Sync" />
   <img src="https://github.com/user-attachments/assets/938ae39c-669b-45ff-974c-1fbb8ffc22a2" width="200" alt="Settings" />
-  <img src="https://github.com/user-attachments/assets/9377584b-ddd4-4dca-83c6-8afcf12a01dc" width="200" alt="Onboarding" />
 </p>
 
 ---
