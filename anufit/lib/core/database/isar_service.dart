@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 @lazySingleton
 class IsarService {

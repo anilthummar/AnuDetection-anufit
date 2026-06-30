@@ -1,0 +1,27 @@
+part of 'health_settings_bloc.dart';
+
+sealed class HealthSettingsEvent extends Equatable {
+  const HealthSettingsEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+final class HealthSettingsLoadRequested extends HealthSettingsEvent {
+  const HealthSettingsLoadRequested();
+}
+
+final class HealthConnectRequested extends HealthSettingsEvent {
+  const HealthConnectRequested();
+}
+
+final class HealthDisconnectRequested extends HealthSettingsEvent {
+  const HealthDisconnectRequested();
+}
+
+final class HealthSyncNowRequested extends HealthSettingsEvent {
+  const HealthSyncNowRequested();
+}
+
+final class HealthViewPermissionsRequested extends HealthSettingsEvent {
+  const HealthViewPermissionsRequested();
+}

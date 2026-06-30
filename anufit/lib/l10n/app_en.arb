@@ -1,0 +1,28 @@
+{
+  "@@locale": "en",
+  "appTitle": "Anufit",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "backup": "Backup & Restore",
+  "export": "Export",
+  "cloudSync": "Cloud Sync",
+  "widgets": "Home Widgets",
+  "security": "Security",
+  "releaseInfo": "Release Info",
+  "backupExport": "Export Backup",
+  "backupRestore": "Restore Backup",
+  "backupEncrypted": "Encrypted backup",
+  "stepsToday": "Steps today",
+  "goalProgress": "Goal progress",
+  "waterIntake": "Water intake",
+  "currentWeight": "Current weight",
+  "languageEnglish": "English",
+  "languageHindi": "Hindi",
+  "languageGujarati": "Gujarati",
+  "accessibilityStepsLabel": "Today's step count: {count}",
+  "@accessibilityStepsLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
+}

@@ -1,0 +1,3 @@
+-keep class com.anudetection.anufit.** { *; }
+-keep class dev.isar.** { *; }
+-dontwarn com.google.android.play.core.**

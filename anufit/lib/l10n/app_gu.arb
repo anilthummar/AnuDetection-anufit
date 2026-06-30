@@ -1,0 +1,28 @@
+{
+  "@@locale": "gu",
+  "appTitle": "Anufit",
+  "dashboard": "ડેશબોર્ડ",
+  "settings": "સેટિંગ્સ",
+  "backup": "બેકઅપ અને પુનઃસ્થાપના",
+  "export": "નિકાસ",
+  "cloudSync": "ક્લાઉડ સિંક",
+  "widgets": "હોમ વિજેટ",
+  "security": "સુરક્ષા",
+  "releaseInfo": "રિલીઝ માહિતી",
+  "backupExport": "બેકઅપ નિકાસ કરો",
+  "backupRestore": "બેકઅપ પુનઃસ્થાપિત કરો",
+  "backupEncrypted": "એન્ક્રિપ્ટેડ બેકઅપ",
+  "stepsToday": "આજના પગલાં",
+  "goalProgress": "ધ્યેય પ્રગતિ",
+  "waterIntake": "પાણીનું સેવન",
+  "currentWeight": "વર્તમાન વજન",
+  "languageEnglish": "અંગ્રેજી",
+  "languageHindi": "હિન્દી",
+  "languageGujarati": "ગુજરાતી",
+  "accessibilityStepsLabel": "આજના પગલાં: {count}",
+  "@accessibilityStepsLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
+}

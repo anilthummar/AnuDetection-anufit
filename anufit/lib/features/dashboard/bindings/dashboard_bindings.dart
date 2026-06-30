@@ -1,4 +1,1 @@
-/// DI bindings for the Dashboard feature.
-///
-/// Register feature dependencies here during implementation.
-abstract final class DashboardBindings {}
+export 'package:anufit/features/dashboard/dashboard_injection.dart';

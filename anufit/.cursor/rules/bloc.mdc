@@ -6,7 +6,7 @@ alwaysApply: false
 
 # BLoC
 
-- Use `flutter_bloc`; one bloc per screen or cohesive flow.
+- Use `flutter_bloc` with **Bloc** only — do not use `Cubit`.
 - States and events extend `Equatable` for value equality.
 - Name files: `<feature>_bloc.dart`, `<feature>_event.dart`, `<feature>_state.dart`.
 - Blocs call **use cases** only — never datasources or APIs directly.

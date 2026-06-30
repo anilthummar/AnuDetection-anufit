@@ -10,10 +10,22 @@ Anufit helps users track fitness activity, view health insights, and sync data f
 
 | Feature | Branch | Status |
 |---------|--------|--------|
-| Dashboard | `feature/dashboard` | Planned |
-| History | `feature/history` | Planned |
-| Settings | `feature/settings` | Planned |
-| Health Sync | `feature/health_sync` | Planned |
+| Dashboard | `feature/dashboard` | Complete |
+| Goals & Motivation | `feature/goals` | Complete |
+| History & Analytics | `feature/history` | Complete |
+| Statistics | `feature/statistics` | Complete |
+| Reports | `feature/reports` | Complete |
+| Health Sync | `feature/health` | Complete |
+| Weight Tracking | `feature/weight` | Complete |
+| Water Tracker | `feature/water` | Complete |
+| Smart Reminders | `feature/reminder` | Complete |
+| User Profile | `feature/profile` | Complete |
+| Settings | `feature/settings` | Complete |
+| Backup & Restore | `feature/backup` | Complete |
+| Home Widgets | `feature/widgets` | Complete |
+| Export Hub | `feature/export` | Complete |
+| Cloud Sync (interfaces) | `feature/sync` | Complete |
+| Security | `feature/security` | Complete |
 
 ## Architecture
 
@@ -203,11 +215,15 @@ Packages are added incrementally — **not all installed upfront**.
 ## Roadmap
 
 - [x] **Phase 1** — Foundation packages, DI, routing, theme
-- [ ] **Phase 2** — Isar setup, core database layer
-- [ ] **Phase 3** — Dashboard feature (MVP)
-- [ ] **Phase 4** — History & settings features
-- [ ] **Phase 5** — Health sync (Apple Health / Google Fit)
-- [ ] **Phase 6** — Localization, analytics, CI/CD
+- [x] **Phase 2** — Isar setup, core database layer (`isar_community`)
+- [x] **Phase 3** — Splash, onboarding & initial setup
+- [x] **Phase 4** — Native step counter engine (Pigeon, sensors, Isar, baseline)
+- [x] **Phase 5** — Dashboard home screen with live activity overview
+- [x] **Phase 6** — Goals, activity timeline, achievements & insights
+- [x] **Phase 7** — History, statistics & reports
+- [x] **Phase 8** — Health Connect & Apple Health integration
+- [x] **Phase 9** — Weight, water, reminders, profile & settings
+- [x] **Phase 10** — Backup, widgets, export, security, localization, CI/CD & release
 
 ## Documentation
 
