@@ -62,6 +62,26 @@ dev_dependencies:
   pigeon: ^26.1.5
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/app_logo.png
+  adaptive_icon_background: "#09AA6C"
+  adaptive_icon_foreground: assets/images/app_icon_foreground.png
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#09AA6C"
+  image: assets/images/app_icon_foreground.png
+  android_gravity: center
+  ios_content_mode: center
+  android_12:
+    color: "#09AA6C"
+    image: assets/images/app_icon_foreground.png
+  web: false
 
 flutter:
   uses-material-design: true
@@ -69,6 +89,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/app_logo.png
+    - assets/images/app_icon_foreground.png
     - assets/icons/
     - assets/animations/
     - assets/lottie/
@@ -76,6 +98,4 @@ flutter:
     - assets/translations/
     - assets/json/
     - assets/legal/
-    - .env.dev
-    - .env.staging
     - .env.production

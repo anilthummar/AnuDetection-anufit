@@ -11,15 +11,26 @@ import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layou
 import 'package:anufit/features/permissions/presentation/widgets/permissions_content.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
-class OnboardingPermissionsPage extends StatefulWidget {
+class OnboardingPermissionsPage extends StatelessWidget {
   const OnboardingPermissionsPage({super.key});
 
   @override
-  State<OnboardingPermissionsPage> createState() => _OnboardingPermissionsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus()),
+      child: const _PermissionsView(),
+    );
+  }
 }
 
-class _OnboardingPermissionsPageState extends State<OnboardingPermissionsPage>
-    with WidgetsBindingObserver {
+class _PermissionsView extends StatefulWidget {
+  const _PermissionsView();
+
+  @override
+  State<_PermissionsView> createState() => _PermissionsViewState();
+}
+
+class _PermissionsViewState extends State<_PermissionsView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -38,18 +49,6 @@ class _OnboardingPermissionsPageState extends State<OnboardingPermissionsPage>
       context.read<PermissionBloc>().add(const PermissionLoadStatus());
     }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus()),
-      child: const _PermissionsView(),
-    );
-  }
-}
-
-class _PermissionsView extends StatelessWidget {
-  const _PermissionsView();
 
   @override
   Widget build(BuildContext context) {

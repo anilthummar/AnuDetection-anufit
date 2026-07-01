@@ -3,10 +3,18 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-FLAVOR="${1:-dev}"
+FLAVOR="${1:-production}"
 TARGET="${2:-apk}"
 
 echo "Building Anufit (flavor: $FLAVOR, target: $TARGET)..."
+
+if [[ "$FLAVOR" == "production" && ("$TARGET" == "appbundle" || "$TARGET" == "aab") ]]; then
+  if [[ ! -f android/key.properties ]]; then
+    echo "Error: android/key.properties is required for production app bundle builds."
+    echo "Copy android/key.properties.example and configure your release keystore."
+    exit 1
+  fi
+fi
 
 case "$TARGET" in
   apk)

@@ -8,7 +8,9 @@
 3. Place the keystore at `android/keystore/anufit-release.jks`.
 4. Build release:
    ```bash
-   flutter build appbundle --release
+   ./scripts/build.sh production appbundle
    ```
+
+See also [store checklist](../compliance/store-checklist.md).
 
 Never commit `key.properties` or `.jks` files to version control.

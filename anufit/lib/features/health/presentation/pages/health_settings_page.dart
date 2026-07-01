@@ -12,6 +12,7 @@ import 'package:anufit/features/health/presentation/widgets/permission_tile.dart
 import 'package:anufit/features/health/presentation/widgets/sync_progress_dialog.dart';
 import 'package:anufit/features/health/presentation/widgets/sync_status_card.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
+import 'package:anufit/shared/widgets/health_disclaimer_dialog.dart';
 import 'package:anufit/shared/widgets/permission_guide_card.dart';
 
 class HealthSettingsPage extends StatefulWidget {
@@ -90,7 +91,19 @@ class _Body extends StatelessWidget {
       case HealthPermissionAction.openAppSettings:
         bloc.add(const HealthSettingsOpenAppSettingsRequested());
       case HealthPermissionAction.openHealthConnect:
-        bloc.add(const HealthSettingsRequestHealthConnectPermissions());
+        _connectWithDisclaimer(context, () {
+          bloc.add(const HealthSettingsRequestHealthConnectPermissions());
+        });
+    }
+  }
+
+  Future<void> _connectWithDisclaimer(
+    BuildContext context,
+    VoidCallback onAccepted,
+  ) async {
+    final accepted = await showHealthDisclaimerDialog(context);
+    if (accepted && context.mounted) {
+      onAccepted();
     }
   }
 
@@ -136,8 +149,10 @@ class _Body extends StatelessWidget {
           AppButton(
             label: 'Connect',
             isLoading: state.isBusy,
-            onPressed: () =>
-                context.read<HealthSettingsBloc>().add(const HealthConnectRequested()),
+            onPressed: () => _connectWithDisclaimer(
+              context,
+              () => context.read<HealthSettingsBloc>().add(const HealthConnectRequested()),
+            ),
           ),
         if (state.status.connected) ...[
           AppButton(

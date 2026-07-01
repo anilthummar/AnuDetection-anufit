@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:anufit/app/router/app_routes.dart';
+import 'package:anufit/core/constants/legal_config.dart';
 import 'package:anufit/l10n/app_localizations.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
@@ -39,6 +40,16 @@ class ReleaseInfoPage extends StatelessWidget {
                 subtitle: const Text('How we handle your health and activity data'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push(AppRoutes.privacyPolicy),
+              ),
+              ListTile(
+                leading: const Icon(Icons.email_outlined),
+                title: const Text('Support'),
+                subtitle: const Text(LegalConfig.supportEmail),
+              ),
+              ListTile(
+                leading: const Icon(Icons.language_outlined),
+                title: const Text('Privacy policy URL'),
+                subtitle: const Text(LegalConfig.privacyPolicyUrl),
               ),
             ],
           );

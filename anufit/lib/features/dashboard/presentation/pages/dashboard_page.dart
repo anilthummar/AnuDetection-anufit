@@ -22,6 +22,7 @@ import 'package:anufit/features/dashboard/presentation/widgets/metric_card.dart'
 import 'package:anufit/features/dashboard/presentation/widgets/progress_ring.dart';
 import 'package:anufit/features/dashboard/presentation/widgets/quick_action_grid.dart';
 import 'package:anufit/features/dashboard/presentation/widgets/streak_card.dart';
+import 'package:anufit/features/dashboard/presentation/widgets/today_steps_summary.dart';
 import 'package:anufit/features/step_counter/domain/entities/hourly_step_point.dart';
 import 'package:anufit/features/step_counter/domain/entities/step_data.dart';
 import 'package:anufit/l10n/app_localizations.dart';
@@ -102,7 +103,18 @@ class _DashboardBody extends StatelessWidget {
                       state is DashboardLoaded ? state.summary.userName : 'Walker',
                   builder: (context, name) => DashboardHeader(userName: name),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+                BlocSelector<DashboardBloc, DashboardState, (int, int)>(
+                  selector: (state) {
+                    if (state is! DashboardLoaded) return (0, 10000);
+                    return (state.summary.todaySteps, state.summary.goal);
+                  },
+                  builder: (context, data) => TodayStepsSummary(
+                    steps: data.$1,
+                    goal: data.$2,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
                 BlocSelector<DashboardBloc, DashboardState, (int, int, double)>(
                   selector: (state) {
                     if (state is! DashboardLoaded) return (0, 10000, 0.0);
@@ -120,10 +132,15 @@ class _DashboardBody extends StatelessWidget {
                 const SizedBox(height: AppSpacing.lg),
                 const _MetricsGrid(),
                 const SizedBox(height: AppSpacing.lg),
-                BlocSelector<DashboardBloc, DashboardState, List<HourlyStepPoint>>(
-                  selector: (state) =>
-                      state is DashboardLoaded ? state.summary.hourlySteps : const [],
-                  builder: (context, hourly) => HourlyActivityChart(hourlySteps: hourly),
+                BlocSelector<DashboardBloc, DashboardState, (List<HourlyStepPoint>, int)>(
+                  selector: (state) {
+                    if (state is! DashboardLoaded) return (const [], 0);
+                    return (state.summary.hourlySteps, state.summary.todaySteps);
+                  },
+                  builder: (context, data) => HourlyActivityChart(
+                    hourlySteps: data.$1,
+                    totalSteps: data.$2,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 BlocSelector<DashboardBloc, DashboardState, GoalProgress?>(
@@ -194,17 +211,17 @@ class _MetricsGrid extends StatelessWidget {
     return ResponsiveBuilder(
       builder: (context, deviceType) {
         final crossAxisCount = deviceType == DeviceType.phone ? 2 : 4;
-        return BlocSelector<DashboardBloc, DashboardState, (int, double, double, Duration, UnitSystem)>(
+        return BlocSelector<DashboardBloc, DashboardState, (double, double, Duration, UnitSystem)>(
           selector: (state) {
             if (state is! DashboardLoaded) {
-              return (0, 0, 0, Duration.zero, UnitSystem.metric);
+              return (0, 0, Duration.zero, UnitSystem.metric);
             }
             final s = state.summary;
-            return (s.todaySteps, s.calories, s.distanceKm, s.walkingTime, s.unit);
+            return (s.calories, s.distanceKm, s.walkingTime, s.unit);
           },
           builder: (context, metrics) {
-            final distanceValue = UnitFormat.displayDistance(metrics.$3, metrics.$5);
-            final distanceUnit = UnitFormat.distanceUnit(metrics.$5);
+            final distanceValue = UnitFormat.displayDistance(metrics.$2, metrics.$4);
+            final distanceUnit = UnitFormat.distanceUnit(metrics.$4);
             return GridView.count(
               crossAxisCount: crossAxisCount,
               shrinkWrap: true,
@@ -214,13 +231,8 @@ class _MetricsGrid extends StatelessWidget {
               childAspectRatio: 1.1,
               children: [
                 MetricCard(
-                  label: 'Steps',
-                  value: _formatInt(metrics.$1),
-                  icon: Icons.directions_walk,
-                ),
-                MetricCard(
                   label: 'Calories',
-                  value: metrics.$2.round().toString(),
+                  value: metrics.$1.round().toString(),
                   unit: 'kcal',
                   icon: Icons.local_fire_department_outlined,
                 ),
@@ -232,7 +244,7 @@ class _MetricsGrid extends StatelessWidget {
                 ),
                 MetricCard(
                   label: 'Walking Time',
-                  value: _formatDuration(metrics.$4),
+                  value: _formatDuration(metrics.$3),
                   icon: Icons.timer_outlined,
                 ),
               ],
@@ -242,11 +254,6 @@ class _MetricsGrid extends StatelessWidget {
       },
     );
   }
-
-  String _formatInt(int value) => value.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (m) => '${m[1]},',
-      );
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;

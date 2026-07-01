@@ -7,13 +7,15 @@ import 'package:timezone/timezone.dart' as tz;
 class LocalNotificationService {
   LocalNotificationService();
 
+  static const _androidIcon = '@drawable/ic_notification';
+
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   Future<void> initialize() async {
     if (_initialized) return;
 
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const android = AndroidInitializationSettings(_androidIcon);
     const ios = DarwinInitializationSettings();
     await _plugin.initialize(
       const InitializationSettings(android: android, iOS: ios),
@@ -69,6 +71,7 @@ class LocalNotificationService {
     android: AndroidNotificationDetails(
       'anufit_reminders',
       'Reminders',
+      icon: _androidIcon,
       importance: Importance.high,
       priority: Priority.high,
     ),
@@ -154,6 +157,7 @@ class LocalNotificationService {
     android: AndroidNotificationDetails(
       'anufit_motivation',
       'Motivation',
+      icon: _androidIcon,
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
     ),
@@ -170,6 +174,7 @@ class LocalNotificationService {
       android: AndroidNotificationDetails(
         'anufit_motivation',
         'Motivation',
+        icon: _androidIcon,
         importance: Importance.high,
         priority: Priority.high,
       ),

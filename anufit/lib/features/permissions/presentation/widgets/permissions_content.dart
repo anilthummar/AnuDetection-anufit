@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:anufit/app/router/app_routes.dart';
 import 'package:anufit/core/constants/permission_instructions.dart';
 import 'package:anufit/app/theme/app_colors.dart';
 import 'package:anufit/features/onboarding/presentation/bloc/permission_bloc.dart';
@@ -31,6 +35,17 @@ class PermissionsContent extends StatelessWidget {
               deniedPermanently: state.notificationsDeniedPermanently,
               onTap: () => _handleNotificationsTap(context, state),
             ),
+            if (Platform.isAndroid) ...[
+              const SizedBox(height: 12),
+              PermissionItemTile(
+                title: 'Battery optimization',
+                subtitle: 'Helps keep step counting reliable',
+                granted: false,
+                deniedPermanently: false,
+                onTap: () => context.push(AppRoutes.batteryOptimization),
+                showStatus: false,
+              ),
+            ],
             const SizedBox(height: 16),
             Text(
               'Tap Allow on each permission. If you denied one earlier, tap the tile '
@@ -73,6 +88,7 @@ class PermissionItemTile extends StatelessWidget {
     required this.granted,
     required this.deniedPermanently,
     required this.onTap,
+    this.showStatus = true,
     super.key,
   });
 
@@ -81,11 +97,12 @@ class PermissionItemTile extends StatelessWidget {
   final bool granted;
   final bool deniedPermanently;
   final VoidCallback onTap;
+  final bool showStatus;
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      onTap: granted ? null : onTap,
+      onTap: (granted && showStatus) ? null : onTap,
       child: Row(
         children: [
           Expanded(
@@ -107,7 +124,9 @@ class PermissionItemTile extends StatelessWidget {
               ],
             ),
           ),
-          if (granted)
+          if (!showStatus)
+            const Icon(Icons.chevron_right)
+          else if (granted)
             const Icon(Icons.check_circle, color: AppColors.success)
           else
             AppButton(

@@ -8,7 +8,7 @@ Prepare the following before Play Store / App Store submission:
 | Screenshots | Phone + tablet | Dashboard, goals, statistics, weight, water |
 | Short description | 80 chars | Offline step tracker with health sync |
 | Full description | 4000 chars | Highlight offline-first, privacy, widgets |
-| Privacy policy URL | — | Host `privacy_policy.md` or equivalent |
+| Privacy policy URL | — | Host via [compliance guide](../compliance/privacy-policy-hosting.md) — must match `LegalConfig.privacyPolicyUrl` |
 
 ## iOS Widget Extension
 

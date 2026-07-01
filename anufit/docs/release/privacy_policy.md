@@ -1,37 +1,40 @@
-# Anufit Privacy Policy
+# Privacy policy
 
-**Last updated:** June 2026
+**Canonical source (in-app):** `assets/legal/privacy_policy.html`  
+**App constants:** `lib/core/constants/legal_config.dart`  
+**Public hosting:** [compliance/privacy-policy-hosting.md](../compliance/privacy-policy-hosting.md)
 
-## Overview
+## Summary
 
-Anufit is an offline-first health and step tracking application. Your activity data is stored locally on your device unless you explicitly export or sync it.
+Step Counter - Pedometer is offline-first. Data stays on the device unless the user exports, shares, or connects Apple Health / Health Connect.
 
-## Data We Collect
+## What we collect (on device)
 
-- Step counts, distance, calories, and activity timeline
-- Profile information you provide (age, height, weight, goals)
-- Weight and water intake logs
-- Health platform data only when you connect Apple Health or Health Connect
+- Steps, distance, calories, walking time, activity timeline
+- Profile fields the user enters (age, height, weight, goals)
+- Weight and water logs entered in the app
+- Optional sync: steps, distance, active calories via Health Connect / Apple Health
 
-## Data Storage
+## What we do not collect
 
-- Primary storage: local Isar database on your device
-- Optional encrypted JSON backups (device key or your passphrase)
-- Encryption keys stored in platform secure storage (Keychain / EncryptedSharedPreferences)
+- No account or login
+- No GPS / location
+- No ads or third-party analytics SDKs (current production build)
+- No sale of personal data
 
-## Data Sharing
+## User rights
 
-- We do not sell your data
-- Health sync shares data only with platforms you authorize
-- Export and share features are user-initiated
-
-## Your Rights
-
-- Export all data via Backup & Restore
-- Clear analytics cache in Settings
-- Disconnect health platforms at any time
-- Delete the app to remove local data
+- Export via Backup & Restore
+- Disconnect health platforms in Settings
+- Delete data in-app or by uninstalling
 
 ## Contact
 
-For privacy questions, contact your app administrator or development team.
+See `LegalConfig` in `lib/core/constants/legal_config.dart` and section 15 of the HTML policy.
+
+## Maintenance
+
+1. Edit `assets/legal/privacy_policy.html`
+2. Run `./scripts/sync_privacy_policy.sh`
+3. Redeploy `docs/compliance/hosting/privacy/` to your website
+4. Update store console URLs if the public URL changes

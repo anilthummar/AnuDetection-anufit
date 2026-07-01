@@ -46,23 +46,64 @@ class _BarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maxY = points.fold<double>(0, (m, p) => p.value > m ? p.value : m);
+    final total = points.fold<int>(0, (sum, p) => sum + p.value.round());
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              Text(
+                '${_formatSteps(total)} total',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.lg),
           SizedBox(
-            height: 160,
+            height: 180,
             child: BarChart(
               BarChartData(
                 maxY: maxY > 0 ? maxY * 1.2 : 100,
+                barTouchData: BarTouchData(enabled: false),
                 borderData: FlBorderData(show: false),
                 gridData: const FlGridData(show: false),
-                titlesData: const FlTitlesData(
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                titlesData: FlTitlesData(
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 28,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= points.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: Text(
+                            points[index].label,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 barGroups: [
                   for (var i = 0; i < points.length; i++)
@@ -72,7 +113,7 @@ class _BarChart extends StatelessWidget {
                         BarChartRodData(
                           toY: points[i].value,
                           color: AppColors.primary,
-                          width: 12,
+                          width: points.length > 12 ? 8 : 12,
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                         ),
                       ],
@@ -94,25 +135,75 @@ class _LineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (points.isEmpty) return AppCard(child: Text(title));
+    if (points.isEmpty) {
+      return AppCard(
+        child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      );
+    }
+
     final maxY = points.fold<double>(0, (m, p) => p.value > m ? p.value : m);
+    final total = points.fold<int>(0, (sum, p) => sum + p.value.round());
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              Text(
+                '${_formatSteps(total)} total',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.lg),
           SizedBox(
-            height: 160,
+            height: 180,
             child: LineChart(
               LineChartData(
                 maxY: maxY > 0 ? maxY * 1.2 : 100,
+                lineTouchData: const LineTouchData(enabled: false),
                 gridData: const FlGridData(show: false),
-                titlesData: const FlTitlesData(
-                  leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 28,
+                      interval: points.length > 12 ? 4 : 1,
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= points.length) {
+                          return const SizedBox.shrink();
+                        }
+                        if (points.length > 12 && index % 4 != 0) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: Text(
+                            points[index].label,
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 lineBarsData: [
                   LineChartBarData(
@@ -134,3 +225,8 @@ class _LineChart extends StatelessWidget {
     );
   }
 }
+
+String _formatSteps(int value) => value.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );

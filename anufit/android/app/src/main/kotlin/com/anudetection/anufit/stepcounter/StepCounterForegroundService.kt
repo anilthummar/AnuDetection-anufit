@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.anudetection.anufit.MainActivity
 import com.anudetection.anufit.R
@@ -20,7 +19,6 @@ class StepCounterForegroundService : Service() {
         createNotificationChannel()
         val notification = buildNotification()
         startForeground(NOTIFICATION_ID, notification)
-        Log.i(TAG, "Foreground service started")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -30,7 +28,6 @@ class StepCounterForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
-        Log.i(TAG, "Foreground service destroyed")
         super.onDestroy()
     }
 
@@ -58,7 +55,7 @@ class StepCounterForegroundService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Step Counter")
             .setContentText("Counting your steps")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -66,7 +63,6 @@ class StepCounterForegroundService : Service() {
     }
 
     companion object {
-        private const val TAG = "StepCounterService"
         private const val CHANNEL_ID = "step_counter_tracking"
         private const val NOTIFICATION_ID = 42001
 

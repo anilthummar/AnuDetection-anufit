@@ -42,6 +42,17 @@ class PermissionService {
 
   Future<bool> openSettings() => openAppSettings();
 
+  Future<bool> isBatteryOptimizationDisabled() async {
+    final status = await Permission.ignoreBatteryOptimizations.status;
+    return status.isGranted;
+  }
+
+  Future<bool> requestDisableBatteryOptimization() async {
+    final status = await Permission.ignoreBatteryOptimizations.request();
+    if (status.isGranted) return true;
+    return openAppSettings();
+  }
+
   Permission _mapPermission(AppPermissionType type) {
     return switch (type) {
       AppPermissionType.activityRecognition => Permission.activityRecognition,

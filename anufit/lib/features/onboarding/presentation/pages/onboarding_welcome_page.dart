@@ -7,6 +7,7 @@ import 'package:anufit/core/enums/onboarding_step.dart';
 import 'package:anufit/core/constants/app_constants.dart';
 import 'package:anufit/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layout.dart';
+import 'package:anufit/shared/widgets/app_logo.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
 
 class OnboardingWelcomePage extends StatelessWidget {
@@ -18,11 +19,14 @@ class OnboardingWelcomePage extends StatelessWidget {
       title: 'Welcome to ${AppConstants.appShortName}',
       onContinue: () => _goNext(context, OnboardingStep.features),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const Center(child: AppLogo(size: 120)),
+          const SizedBox(height: 20),
           Text(
             'Your personal health & step companion.',
             style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           const AppCard(

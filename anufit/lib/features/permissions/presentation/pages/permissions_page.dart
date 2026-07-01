@@ -11,14 +11,26 @@ import 'package:anufit/features/permissions/presentation/widgets/permissions_con
 import 'package:anufit/shared/widgets/design_system.dart';
 
 /// Standalone permissions screen shown when the user must re-grant access.
-class PermissionsPage extends StatefulWidget {
+class PermissionsPage extends StatelessWidget {
   const PermissionsPage({super.key});
 
   @override
-  State<PermissionsPage> createState() => _PermissionsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus()),
+      child: const _PermissionsPageBody(),
+    );
+  }
 }
 
-class _PermissionsPageState extends State<PermissionsPage> with WidgetsBindingObserver {
+class _PermissionsPageBody extends StatefulWidget {
+  const _PermissionsPageBody();
+
+  @override
+  State<_PermissionsPageBody> createState() => _PermissionsPageBodyState();
+}
+
+class _PermissionsPageBodyState extends State<_PermissionsPageBody> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -40,60 +52,57 @@ class _PermissionsPageState extends State<PermissionsPage> with WidgetsBindingOb
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<PermissionBloc>()..add(const PermissionLoadStatus()),
-      child: BlocBuilder<PermissionBloc, PermissionState>(
-        builder: (context, state) {
-          final activityReady = state.activityGranted;
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Permissions'),
-              leading: activityReady
-                  ? IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => context.go(AppRoutes.dashboard),
-                    )
-                  : null,
-              automaticallyImplyLeading: activityReady,
+    return BlocBuilder<PermissionBloc, PermissionState>(
+      builder: (context, state) {
+        final activityReady = state.activityGranted;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Permissions'),
+            leading: activityReady
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => context.go(AppRoutes.dashboard),
+                  )
+                : null,
+            automaticallyImplyLeading: activityReady,
+          ),
+          body: ResponsiveContainer(
+            child: ListView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              children: [
+                Text(
+                  'Step counting needs Activity Recognition',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'Permissions may be removed from App info in system settings. '
+                  'Re-enable them here to continue tracking.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                if (state.isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  const PermissionsContent(),
+                const SizedBox(height: AppSpacing.lg),
+                AppButton(
+                  label: 'Open Settings',
+                  variant: AppButtonVariant.text,
+                  onPressed: () =>
+                      context.read<PermissionBloc>().add(const PermissionOpenSettings()),
+                  expand: false,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppButton(
+                  label: activityReady ? 'Continue' : 'Activity permission required',
+                  onPressed: activityReady ? () => context.go(AppRoutes.dashboard) : null,
+                ),
+              ],
             ),
-            body: ResponsiveContainer(
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                children: [
-                  Text(
-                    'Step counting needs Activity Recognition',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Permissions may be removed from App info in system settings. '
-                    'Re-enable them here to continue tracking.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  if (state.isLoading)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    const PermissionsContent(),
-                  const SizedBox(height: AppSpacing.lg),
-                  AppButton(
-                    label: 'Open Settings',
-                    variant: AppButtonVariant.text,
-                    onPressed: () =>
-                        context.read<PermissionBloc>().add(const PermissionOpenSettings()),
-                    expand: false,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  AppButton(
-                    label: activityReady ? 'Continue' : 'Activity permission required',
-                    onPressed: activityReady ? () => context.go(AppRoutes.dashboard) : null,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

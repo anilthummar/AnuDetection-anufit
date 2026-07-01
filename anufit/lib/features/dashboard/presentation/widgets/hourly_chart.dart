@@ -9,10 +9,12 @@ import 'package:anufit/shared/widgets/design_system.dart';
 class HourlyActivityChart extends StatefulWidget {
   const HourlyActivityChart({
     required this.hourlySteps,
+    required this.totalSteps,
     super.key,
   });
 
   final List<HourlyStepPoint> hourlySteps;
+  final int totalSteps;
 
   @override
   State<HourlyActivityChart> createState() => _HourlyActivityChartState();
@@ -59,11 +61,25 @@ class _HourlyActivityChartState extends State<HourlyActivityChart>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hourly Activity',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Hourly Activity',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
+                ),
+                Text(
+                  '${_formatSteps(widget.totalSteps)} total',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.lg),
             SizedBox(
@@ -71,6 +87,7 @@ class _HourlyActivityChartState extends State<HourlyActivityChart>
               child: BarChart(
                 BarChartData(
                   maxY: maxY > 0 ? maxY * 1.2 : 100,
+                  barTouchData: BarTouchData(enabled: false),
                   gridData: const FlGridData(show: false),
                   borderData: FlBorderData(show: false),
                   titlesData: FlTitlesData(
@@ -123,4 +140,9 @@ class _HourlyActivityChartState extends State<HourlyActivityChart>
       ),
     );
   }
+
+  String _formatSteps(int value) => value.toString().replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (m) => '${m[1]},',
+      );
 }

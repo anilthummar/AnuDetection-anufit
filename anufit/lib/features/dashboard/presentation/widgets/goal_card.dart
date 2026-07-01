@@ -16,10 +16,13 @@ class GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final goalReached = progress.todaySteps >= progress.goal && progress.goal > 0;
     final eta = progress.estimatedCompletion;
-    final etaLabel = eta == null
-        ? 'Keep moving to estimate completion'
-        : 'Est. goal by ${DateFormat.jm().format(eta)}';
+    final etaLabel = goalReached
+        ? 'Daily goal completed'
+        : eta == null
+            ? 'Keep moving to estimate completion'
+            : 'Est. goal by ${DateFormat.jm().format(eta)}';
 
     return AppCard(
       child: Column(
@@ -39,20 +42,28 @@ class GoalCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           LinearProgressIndicator(
-            value: progress.completionPercentage,
+            value: progress.completionPercentage.clamp(0.0, 1.0),
             minHeight: 8,
             borderRadius: BorderRadius.circular(8),
             backgroundColor: AppColors.border,
+            color: goalReached ? AppColors.success : null,
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             '${_format(progress.todaySteps)} / ${_format(progress.goal)} steps',
-            style: Theme.of(context).textTheme.titleSmall,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            '${_format(progress.remainingSteps)} steps remaining',
-            style: Theme.of(context).textTheme.bodyMedium,
+            goalReached
+                ? 'Goal reached — keep walking!'
+                : '${_format(progress.remainingSteps)} steps remaining',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: goalReached ? AppColors.success : null,
+                  fontWeight: goalReached ? FontWeight.w600 : null,
+                ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(

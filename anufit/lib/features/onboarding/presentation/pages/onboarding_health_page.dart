@@ -5,12 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:anufit/app/router/app_routes.dart';
+import 'package:anufit/core/constants/health_disclaimers.dart';
 import 'package:anufit/core/di/injection.dart';
 import 'package:anufit/core/enums/onboarding_step.dart';
 import 'package:anufit/features/onboarding/presentation/bloc/health_connect_bloc.dart';
 import 'package:anufit/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:anufit/features/onboarding/presentation/widgets/onboarding_layout.dart';
 import 'package:anufit/shared/widgets/design_system.dart';
+import 'package:anufit/shared/widgets/health_disclaimer_dialog.dart';
 import 'package:anufit/shared/widgets/permission_guide_card.dart';
 
 class OnboardingHealthPage extends StatefulWidget {
@@ -59,8 +61,7 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
               title: 'Health Integration',
               isLoading: state.isSaving,
               continueLabel: 'Connect $platformLabel',
-              onContinue: () =>
-                  context.read<HealthConnectBloc>().add(const HealthConnectRequested()),
+              onContinue: () => _onConnectTapped(context),
               secondaryAction: Column(
                 children: [
                   if (state.errorMessage != null) ...[
@@ -87,7 +88,7 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
                           case HealthConnectGuidance.openAppSettingsForActivity:
                             bloc.add(const HealthConnectOpenSettingsRequested());
                           case HealthConnectGuidance.openHealthConnect:
-                            bloc.add(const HealthConnectRequestHealthPermissions());
+                            _requestHealthPermissions(context);
                           case null:
                             bloc.add(const HealthConnectRequested());
                         }
@@ -123,10 +124,17 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Step Counter needs permission to read your steps, distance, '
-                          'and activity data. Tap "$platformLabel" above to allow access.',
+                          'Optionally sync steps, distance, and activity calories '
+                          'with $platformLabel. You can skip and still count steps on this device.',
                         ),
                       ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  AppCard(
+                    child: Text(
+                      HealthDisclaimers.healthSummary,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ],
@@ -136,6 +144,18 @@ class _OnboardingHealthPageState extends State<OnboardingHealthPage> with Widget
         ),
       ),
     );
+  }
+
+  Future<void> _onConnectTapped(BuildContext context) async {
+    final accepted = await showHealthDisclaimerDialog(context);
+    if (!accepted || !context.mounted) return;
+    context.read<HealthConnectBloc>().add(const HealthConnectRequested());
+  }
+
+  Future<void> _requestHealthPermissions(BuildContext context) async {
+    final accepted = await showHealthDisclaimerDialog(context);
+    if (!accepted || !context.mounted) return;
+    context.read<HealthConnectBloc>().add(const HealthConnectRequestHealthPermissions());
   }
 
   Future<void> _goNext(BuildContext context) async {

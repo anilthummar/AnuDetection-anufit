@@ -53,11 +53,13 @@ android {
                 "proguard-rules.pro",
             )
             val keystorePropertiesFile = rootProject.file("key.properties")
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+            if (!keystorePropertiesFile.exists()) {
+                throw GradleException(
+                    "Release builds require android/key.properties with a release keystore. " +
+                        "Copy key.properties.example and configure your signing key.",
+                )
             }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

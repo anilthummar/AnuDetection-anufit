@@ -38,8 +38,6 @@ class PermissionsSection extends StatelessWidget {
         PermissionTile(label: 'Steps', granted: permissions.steps),
         PermissionTile(label: 'Distance', granted: permissions.distance),
         PermissionTile(label: 'Calories', granted: permissions.calories),
-        PermissionTile(label: 'Weight', granted: permissions.weight),
-        PermissionTile(label: 'Height', granted: permissions.height),
         const SizedBox(height: AppSpacing.sm),
         Text('Status: ${permissions.status.name}'),
       ],

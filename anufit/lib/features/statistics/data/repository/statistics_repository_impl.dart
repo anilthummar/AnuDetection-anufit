@@ -132,14 +132,30 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
   }
 
   Future<List<ChartDataPoint>> _buildWeeklyBars(DateTime today) async {
-    final start = today.subtract(const Duration(days: 6));
-    final models = await _historyLocal.getDailyRange(start: start, end: today, limit: 7);
-    return models
-        .map((m) => ChartDataPoint(
-              label: DateFormat('E').format(m.date),
-              value: m.steps.toDouble(),
-            ))
-        .toList();
+    final todayNorm = DateTime(today.year, today.month, today.day);
+    final start = todayNorm.subtract(const Duration(days: 6));
+    final models = await _historyLocal.getDailyRange(
+      start: start,
+      end: todayNorm,
+      limit: 7,
+    );
+    final todaySteps = await _stepRepository.getTodaySteps();
+
+    final stepsByDay = <DateTime, int>{};
+    for (final m in models) {
+      final day = DateTime(m.date.year, m.date.month, m.date.day);
+      stepsByDay[day] = m.steps;
+    }
+
+    return List.generate(7, (index) {
+      final day = start.add(Duration(days: index));
+      final stored = stepsByDay[day] ?? 0;
+      final steps = day == todayNorm ? [stored, todaySteps].reduce((a, b) => a > b ? a : b) : stored;
+      return ChartDataPoint(
+        label: DateFormat('EEE').format(day),
+        value: steps.toDouble(),
+      );
+    });
   }
 
   Future<List<ChartDataPoint>> _buildMonthlyLine(int year) async {

@@ -11,26 +11,16 @@ class HealthPlatformDatasource {
 
   final Health _health;
 
-  static const _essentialReadTypes = [
-    HealthDataType.STEPS,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-  ];
+  /// iOS uses walking/running distance; Health Connect uses [DISTANCE_DELTA].
+  HealthDataType get _distanceType => Platform.isIOS
+      ? HealthDataType.DISTANCE_WALKING_RUNNING
+      : HealthDataType.DISTANCE_DELTA;
 
-  static const _readTypes = [
-    HealthDataType.STEPS,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-    HealthDataType.WEIGHT,
-    HealthDataType.HEIGHT,
-  ];
-
-  static const _writeTypes = [
-    HealthDataType.STEPS,
-    HealthDataType.DISTANCE_WALKING_RUNNING,
-    HealthDataType.ACTIVE_ENERGY_BURNED,
-    HealthDataType.WEIGHT,
-  ];
+  List<HealthDataType> get _essentialTypes => [
+        HealthDataType.STEPS,
+        _distanceType,
+        HealthDataType.ACTIVE_ENERGY_BURNED,
+      ];
 
   HealthPlatform get currentPlatform {
     if (Platform.isIOS) return HealthPlatform.appleHealth;
@@ -65,8 +55,8 @@ class HealthPlatformDatasource {
 
   Future<HealthPermissionEntity> checkPermissions() async {
     await _health.configure();
-    final granted = await _isAuthorized();
-    return _permissionEntity(granted);
+    final access = await _resolveEssentialAccess();
+    return _toPermissionEntity(access);
   }
 
   /// Opens the Health Connect / Apple Health permission UI.
@@ -81,37 +71,38 @@ class HealthPlatformDatasource {
       }
     }
 
-    final readAccess = _readTypes.map((_) => HealthDataAccess.READ).toList();
-    await _health.requestAuthorization(_readTypes, permissions: readAccess);
+    final types = _essentialTypes;
+    final readAccess = types.map((_) => HealthDataAccess.READ).toList();
+    await _health.requestAuthorization(types, permissions: readAccess);
 
-    var granted = await _isAuthorized();
-    if (!granted && Platform.isAndroid) {
-      final writeAccess = _readTypes
-          .map(
-            (type) => _writeTypes.contains(type)
-                ? HealthDataAccess.READ_WRITE
-                : HealthDataAccess.READ,
-          )
-          .toList();
-      await _health.requestAuthorization(_readTypes, permissions: writeAccess);
-      granted = await _isAuthorized();
+    var access = await _resolveEssentialAccess(probeIfStale: true);
+    if (!access.isFullyGranted && Platform.isAndroid) {
+      final writeAccess = types.map((_) => HealthDataAccess.READ_WRITE).toList();
+      await _health.requestAuthorization(types, permissions: writeAccess);
+      access = await _resolveEssentialAccess(probeIfStale: true);
     }
 
-    return _permissionEntity(granted);
+    return _toPermissionEntity(access);
   }
 
-  Future<bool> _isAuthorized() async {
-    for (final type in _essentialReadTypes) {
-      if (await _hasAccess(type)) continue;
-      return await _canReadStepsProbe();
-    }
+  /// Checks read access for steps, distance, and active calories only.
+  Future<_EssentialAccess> _getEssentialAccess() async {
+    return _EssentialAccess(
+      steps: await _hasAccess(HealthDataType.STEPS),
+      distance: await _hasAccess(_distanceType),
+      calories: await _hasAccess(HealthDataType.ACTIVE_ENERGY_BURNED),
+    );
+  }
 
-    for (final type in _readTypes) {
-      if (!await _hasAccess(type)) {
-        return await _canReadStepsProbe();
-      }
-    }
-    return true;
+  /// Resolves essential access; optional probe only after an authorization request.
+  Future<_EssentialAccess> _resolveEssentialAccess({bool probeIfStale = false}) async {
+    final access = await _getEssentialAccess();
+    if (access.isFullyGranted) return access;
+    if (!probeIfStale || !Platform.isAndroid || !access.steps) return access;
+
+    if (!await _canReadStepsProbe()) return access;
+
+    return _getEssentialAccess();
   }
 
   Future<bool> _hasAccess(HealthDataType type) async {
@@ -125,7 +116,7 @@ class HealthPlatformDatasource {
     return readWrite == true;
   }
 
-  /// Fallback when [hasPermissions] is stale after granting in Health Connect settings.
+  /// Fallback when [hasPermissions] is stale right after granting in Health Connect.
   Future<bool> _canReadStepsProbe() async {
     try {
       final now = DateTime.now();
@@ -141,21 +132,28 @@ class HealthPlatformDatasource {
     }
   }
 
-  HealthPermissionEntity _permissionEntity(bool granted) => HealthPermissionEntity(
-        steps: granted,
-        distance: granted,
-        calories: granted,
-        weight: granted,
-        height: granted,
-        authorized: granted,
-        status: granted ? HealthPermissionState.granted : HealthPermissionState.denied,
-      );
+  HealthPermissionEntity _toPermissionEntity(_EssentialAccess access) {
+    return HealthPermissionEntity(
+      steps: access.steps,
+      distance: access.distance,
+      calories: access.calories,
+      weight: false,
+      height: false,
+      authorized: access.isFullyGranted,
+      status: access.isFullyGranted
+          ? HealthPermissionState.granted
+          : HealthPermissionState.denied,
+    );
+  }
 
   Future<List<HealthDailyRecord>> readDailyRecords({
     required DateTime start,
     required DateTime end,
   }) async {
     await _health.configure();
+    final access = await _getEssentialAccess();
+    if (!access.steps) return [];
+
     final stepsData = await _health.getHealthDataFromTypes(
       types: [HealthDataType.STEPS],
       startTime: start,
@@ -198,6 +196,9 @@ class HealthPlatformDatasource {
     double? calories,
   }) async {
     await _health.configure();
+    final access = await _getEssentialAccess();
+    if (!access.steps) return false;
+
     final end = date.add(const Duration(days: 1)).subtract(const Duration(seconds: 1));
     final success = await _health.writeHealthData(
       value: steps.toDouble(),
@@ -212,19 +213,8 @@ class HealthPlatformDatasource {
     required double weightKg,
     required DateTime date,
   }) async {
-    try {
-      await _health.configure();
-      final granted = await _health.hasPermissions(_writeTypes) ?? false;
-      if (!granted) return false;
-      return await _health.writeHealthData(
-        value: weightKg,
-        type: HealthDataType.WEIGHT,
-        startTime: date,
-        endTime: date,
-      );
-    } catch (_) {
-      return false;
-    }
+    // Weight sync via Health Connect / Apple Health is not requested in v1.
+    return false;
   }
 
   Future<void> disconnect() async {
@@ -234,4 +224,18 @@ class HealthPlatformDatasource {
 
 extension _FirstOrNull<E> on List<E> {
   E? get firstOrNull => isEmpty ? null : first;
+}
+
+class _EssentialAccess {
+  const _EssentialAccess({
+    required this.steps,
+    required this.distance,
+    required this.calories,
+  });
+
+  final bool steps;
+  final bool distance;
+  final bool calories;
+
+  bool get isFullyGranted => steps && distance && calories;
 }
